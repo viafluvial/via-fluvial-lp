@@ -1,0 +1,7 @@
+dns_project_id    = "vfa-dns-core"
+dns_zone_name     = "zona-dns-viafluvial-com-br"
+application_lb_ip = "8.232.27.179"
+record_ttl        = 300
+
+# Use null para ADC no runner/local ou defina o caminho do JSON
+credentials_file = null

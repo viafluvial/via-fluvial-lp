@@ -1,0 +1,30 @@
+---
+project_name: via-fluvial-lp
+stack_name: viafluvial-sobre-lp-prd
+
+# DNS publico da landing page
+domain_primary: sobre.viafluvial.com.br
+domain_www: www.sobre.viafluvial.com.br
+
+# Traefik no cluster application
+traefik_network: service-public
+traefik_constraint_label: service-public
+traefik_entrypoint_http: http
+traefik_entrypoint_https: https
+traefik_certresolver: letsencrypt
+traefik_acme_email: ti@viafluvial.com.br
+traefik_router_name: sobre-viafluvial-prd
+
+# Portainer do cluster application
+portainer_url: https://portainer.application.plataforma.prd.viafluvial.com.br
+portainer_endpoint_name: application-prd
+portainer_validate_certs: true
+
+# Operacao de deploy
+portainer_stack_prune: true
+portainer_stack_pull_image: true
+stack_replicas: 2
+
+# Imagem da aplicacao
+# Sobrescreva com -e app_image=<image:tag> no deploy
+app_image: docker.io/viafluvial/via-fluvial-lp:latest

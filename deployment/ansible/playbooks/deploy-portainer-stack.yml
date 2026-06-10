@@ -1,0 +1,159 @@
+---
+- name: Deploy stack da landing page no Portainer (cluster application)
+  hosts: managers
+  gather_facts: false
+  become: true
+
+  vars:
+    remote_stack_dir: /opt/viafluvial/stacks/sobre-lp
+    remote_stack_file: /opt/viafluvial/stacks/sobre-lp/stack.sobre.yml
+    portainer_base_url: "{{ portainer_url | regex_replace('/$', '') }}"
+    portainer_api_key_resolved: "{{ portainer_api_key | default(lookup('env', 'PORTAINER_API_KEY'), true) }}"
+
+  pre_tasks:
+    - name: Validar parametros obrigatorios
+      ansible.builtin.assert:
+        that:
+          - (portainer_base_url | length) > 0
+          - (portainer_api_key_resolved | length) > 0
+          - (stack_name | length) > 0
+          - (app_image | length) > 0
+        fail_msg: "Defina portainer_url, PORTAINER_API_KEY/portainer_api_key, stack_name e app_image."
+
+    - name: Validar conectividade Docker Swarm no manager
+      ansible.builtin.command: docker info --format '{{"{{ .Swarm.LocalNodeState }}"}}'
+      register: swarm_state
+      changed_when: false
+
+    - name: Garantir que o host participa de um swarm ativo
+      ansible.builtin.assert:
+        that:
+          - swarm_state.stdout == 'active'
+        fail_msg: "O host alvo nao esta com Docker Swarm ativo."
+
+  tasks:
+    - name: Garantir rede overlay do Traefik
+      ansible.builtin.shell: |
+        set -euo pipefail
+        docker network inspect {{ traefik_network }} >/dev/null 2>&1 || docker network create --driver overlay --attachable {{ traefik_network }}
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+    - name: Criar diretorio remoto da stack
+      ansible.builtin.file:
+        path: "{{ remote_stack_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Renderizar compose da stack no manager
+      ansible.builtin.template:
+        src: ../templates/stack.sobre.yml.j2
+        dest: "{{ remote_stack_file }}"
+        mode: "0644"
+
+    - name: Ler compose renderizado
+      ansible.builtin.slurp:
+        path: "{{ remote_stack_file }}"
+      register: rendered_stack_file
+
+    - name: Obter endpoints do Portainer
+      ansible.builtin.uri:
+        url: "{{ portainer_base_url }}/api/endpoints"
+        method: GET
+        headers:
+          X-API-Key: "{{ portainer_api_key_resolved }}"
+        validate_certs: "{{ portainer_validate_certs }}"
+        status_code: 200
+      register: endpoints_response
+      delegate_to: localhost
+      become: false
+      no_log: true
+
+    - name: Resolver endpoint id pelo nome
+      ansible.builtin.set_fact:
+        portainer_endpoint_id_resolved: "{{ (endpoints_response.json | selectattr('Name', 'equalto', portainer_endpoint_name) | map(attribute='Id') | list | first) | string }}"
+
+    - name: Validar endpoint resolvido
+      ansible.builtin.assert:
+        that:
+          - (portainer_endpoint_id_resolved | length) > 0
+        fail_msg: "Nao foi possivel resolver endpoint '{{ portainer_endpoint_name }}' no Portainer."
+
+    - name: Obter Swarm ID no endpoint
+      ansible.builtin.uri:
+        url: "{{ portainer_base_url }}/api/endpoints/{{ portainer_endpoint_id_resolved }}/docker/swarm"
+        method: GET
+        headers:
+          X-API-Key: "{{ portainer_api_key_resolved }}"
+        validate_certs: "{{ portainer_validate_certs }}"
+        status_code: 200
+      register: swarm_response
+      delegate_to: localhost
+      become: false
+      no_log: true
+
+    - name: Listar stacks existentes no endpoint
+      ansible.builtin.uri:
+        url: "{{ portainer_base_url }}/api/stacks?endpointId={{ portainer_endpoint_id_resolved }}"
+        method: GET
+        headers:
+          X-API-Key: "{{ portainer_api_key_resolved }}"
+        validate_certs: "{{ portainer_validate_certs }}"
+        status_code: 200
+      register: stacks_response
+      delegate_to: localhost
+      become: false
+      no_log: true
+
+    - name: Localizar stack atual por nome
+      ansible.builtin.set_fact:
+        current_stack: "{{ (stacks_response.json | selectattr('Name', 'equalto', stack_name) | list | first) | default({}) }}"
+
+    - name: Criar stack no Portainer
+      ansible.builtin.uri:
+        url: "{{ portainer_base_url }}/api/stacks/create/swarm/string?endpointId={{ portainer_endpoint_id_resolved }}"
+        method: POST
+        headers:
+          X-API-Key: "{{ portainer_api_key_resolved }}"
+        body_format: json
+        body:
+          Name: "{{ stack_name }}"
+          StackFileContent: "{{ (rendered_stack_file.content | b64decode) | regex_replace('\\r\\n', '\\n') | regex_replace('\\r', '') }}"
+          Env: []
+          SwarmID: "{{ swarm_response.json.ID }}"
+          FromAppTemplate: false
+        validate_certs: "{{ portainer_validate_certs }}"
+        status_code: [200, 201, 202]
+      when: current_stack == {}
+      delegate_to: localhost
+      become: false
+      no_log: true
+
+    - name: Atualizar stack existente no Portainer
+      ansible.builtin.uri:
+        url: "{{ portainer_base_url }}/api/stacks/{{ current_stack.Id }}?endpointId={{ portainer_endpoint_id_resolved }}"
+        method: PUT
+        headers:
+          X-API-Key: "{{ portainer_api_key_resolved }}"
+        body_format: json
+        body:
+          StackFileContent: "{{ (rendered_stack_file.content | b64decode) | regex_replace('\\r\\n', '\\n') | regex_replace('\\r', '') }}"
+          Env: []
+          Prune: "{{ portainer_stack_prune }}"
+          PullImage: "{{ portainer_stack_pull_image }}"
+        validate_certs: "{{ portainer_validate_certs }}"
+        status_code: [200, 201, 202]
+      when: current_stack != {}
+      delegate_to: localhost
+      become: false
+      no_log: true
+
+  post_tasks:
+    - name: Resumo final
+      ansible.builtin.debug:
+        msg:
+          - "Stack: {{ stack_name }}"
+          - "Imagem: {{ app_image }}"
+          - "Endpoint Portainer: {{ portainer_endpoint_name }} (id={{ portainer_endpoint_id_resolved }})"
+          - "Dominios: https://{{ domain_primary }} e https://{{ domain_www }}"

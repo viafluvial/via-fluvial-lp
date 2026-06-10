@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  sobre-lp:
+    image: "${APP_IMAGE}"
+    networks:
+      - service-public
+    deploy:
+      mode: replicated
+      replicas: ${STACK_REPLICAS:-2}
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=service-public
+        - traefik.constraint-label=service-public
+        - traefik.http.routers.sobre-viafluvial-prd-http.rule=Host(`${DOMAIN_PRIMARY}`) || Host(`${DOMAIN_WWW}`)
+        - traefik.http.routers.sobre-viafluvial-prd-http.entrypoints=http
+        - traefik.http.routers.sobre-viafluvial-prd-http.middlewares=https-redirect
+        - traefik.http.routers.sobre-viafluvial-prd-https.rule=Host(`${DOMAIN_PRIMARY}`) || Host(`${DOMAIN_WWW}`)
+        - traefik.http.routers.sobre-viafluvial-prd-https.entrypoints=https
+        - traefik.http.routers.sobre-viafluvial-prd-https.tls=true
+        - traefik.http.routers.sobre-viafluvial-prd-https.tls.certresolver=letsencrypt
+        - traefik.http.routers.sobre-viafluvial-prd-https.service=sobre-viafluvial-prd
+        - traefik.http.services.sobre-viafluvial-prd.loadbalancer.server.port=80
+        - traefik.http.services.sobre-viafluvial-prd.loadbalancer.server.scheme=http
+
+networks:
+  service-public:
+    external: true
+    name: service-public

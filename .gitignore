@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+coverage/
+
+# Runtime artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Deployment secrets and local runtime files
+deployment/**/*.env
+deployment/**/*.env.local
+deployment/**/terraform.tfvars
+deployment/**/.terraform/
+deployment/**/.terraform.lock.hcl
+deployment/**/*.tfstate
+deployment/**/*.tfstate.*
+deployment/**/*.tfplan
+deployment/**/crash.log
+deployment/**/ansible.log
+*.retry
+
+# Tooling
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+modelos/*.zip
+
+credentials/sa.json
