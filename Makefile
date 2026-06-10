@@ -9,7 +9,7 @@ PORT ?= 8081
 ANSIBLE_DIR := deployment/ansible
 TF_DNS_DIR := deployment/terraform/dns
 PORTAINER_URL ?= https://portainer.application.plataforma.prd.viafluvial.com.br
-PORTAINER_ENDPOINT_NAME ?= application-prd
+PORTAINER_ENDPOINT_NAME ?= application
 APP_IMAGE ?= via-fluvial-lp:latest
 ifneq ($(DOCKERHUB_USERNAME),)
 APP_IMAGE := docker.io/$(DOCKERHUB_USERNAME)/$(PROJECT_NAME):latest
@@ -79,18 +79,49 @@ ansible-ping: ## Testa conectividade Ansible com o cluster application
 
 ansible-deploy: ## Deploy da stack no Portainer via Ansible
 	@test -n "$(PORTAINER_API_KEY)" || (echo "PORTAINER_API_KEY nao definido" && exit 1)
-	ANSIBLE_CONFIG=$(ANSIBLE_DIR)/ansible.cfg ansible-playbook -i $(ANSIBLE_DIR)/inventories/application-prd.ini $(ANSIBLE_DIR)/playbooks/deploy-portainer-stack.yml -e "app_image=$(APP_IMAGE)" -e "portainer_api_key=$(PORTAINER_API_KEY)" -e "portainer_url=$(PORTAINER_URL)" -e "portainer_endpoint_name=$(PORTAINER_ENDPOINT_NAME)"
+	ANSIBLE_CONFIG=$(ANSIBLE_DIR)/ansible.cfg ansible-playbook -i $(ANSIBLE_DIR)/inventories/application-prd.ini $(ANSIBLE_DIR)/playbooks/deploy-portainer-stack.yml -e @$(ANSIBLE_DIR)/group_vars/application-prd.yml -e "app_image=$(APP_IMAGE)" -e "portainer_api_key=$(PORTAINER_API_KEY)" -e "portainer_url=$(PORTAINER_URL)" -e "portainer_endpoint_name=$(PORTAINER_ENDPOINT_NAME)"
 
 tf-dns-init: ## Inicializa Terraform do DNS no GCP
 	cd $(TF_DNS_DIR) && terraform init
 
+validate-gcp-auth: ## Valida autenticacao GCP para Terraform DNS (ADC ou arquivo JSON)
+	@CRED_FILE="$(or $(GCP_CREDENTIALS_FILE),$(GOOGLE_APPLICATION_CREDENTIALS))"; \
+	if [[ -n "$$CRED_FILE" ]]; then \
+		if [[ -f "$$CRED_FILE" ]]; then \
+			:; \
+		elif [[ "$$CRED_FILE" == /* && -f ".$$CRED_FILE" ]]; then \
+			echo "Aviso: usando credencial local .$${CRED_FILE} (ajuste seu export para caminho relativo ao projeto)."; \
+		else \
+			echo "Arquivo de credencial GCP inexistente: $$CRED_FILE"; \
+			echo "Exemplo valido neste projeto: export GOOGLE_APPLICATION_CREDENTIALS=credentials/sa.json"; \
+			exit 1; \
+		fi; \
+	elif gcloud auth application-default print-access-token >/dev/null 2>&1; then \
+		:; \
+	else \
+		echo "Sem credenciais GCP para Terraform."; \
+		echo "Use uma das opcoes:"; \
+		echo "1) export GOOGLE_APPLICATION_CREDENTIALS=/caminho/sa.json"; \
+		echo "2) export GCP_CREDENTIALS_FILE=/caminho/sa.json"; \
+		echo "3) gcloud auth application-default login"; \
+		exit 1; \
+	fi
+
 tf-dns-plan: ## Gera plano Terraform de DNS (requer GCP_DNS_PROJECT_ID)
 	@test -n "$(GCP_DNS_PROJECT_ID)" || (echo "GCP_DNS_PROJECT_ID nao definido" && exit 1)
-	cd $(TF_DNS_DIR) && terraform plan -var="dns_project_id=$(GCP_DNS_PROJECT_ID)" -var="dns_zone_name=$(or $(GCP_DNS_ZONE_NAME),zona-dns-viafluvial-com-br)" -var="application_lb_ip=$(APPLICATION_CLUSTER_IP)"
+	@$(MAKE) validate-gcp-auth
+	@CRED_FILE="$(or $(GCP_CREDENTIALS_FILE),$(GOOGLE_APPLICATION_CREDENTIALS))"; \
+	if [[ "$$CRED_FILE" == /* && -f ".$$CRED_FILE" ]]; then CRED_FILE=".$$CRED_FILE"; fi; \
+	if [[ -n "$$CRED_FILE" && "$$CRED_FILE" != /* ]]; then CRED_FILE="$(PWD)/$$CRED_FILE"; fi; \
+	cd $(TF_DNS_DIR) && terraform plan -var="dns_project_id=$(GCP_DNS_PROJECT_ID)" -var="dns_zone_name=$(or $(GCP_DNS_ZONE_NAME),zona-dns-viafluvial-com-br)" -var="application_lb_ip=$(APPLICATION_CLUSTER_IP)" -var="credentials_file=$$CRED_FILE"
 
 tf-dns-apply: ## Aplica Terraform de DNS (requer GCP_DNS_PROJECT_ID)
 	@test -n "$(GCP_DNS_PROJECT_ID)" || (echo "GCP_DNS_PROJECT_ID nao definido" && exit 1)
-	cd $(TF_DNS_DIR) && terraform apply -auto-approve -var="dns_project_id=$(GCP_DNS_PROJECT_ID)" -var="dns_zone_name=$(or $(GCP_DNS_ZONE_NAME),zona-dns-viafluvial-com-br)" -var="application_lb_ip=$(APPLICATION_CLUSTER_IP)"
+	@$(MAKE) validate-gcp-auth
+	@CRED_FILE="$(or $(GCP_CREDENTIALS_FILE),$(GOOGLE_APPLICATION_CREDENTIALS))"; \
+	if [[ "$$CRED_FILE" == /* && -f ".$$CRED_FILE" ]]; then CRED_FILE=".$$CRED_FILE"; fi; \
+	if [[ -n "$$CRED_FILE" && "$$CRED_FILE" != /* ]]; then CRED_FILE="$(PWD)/$$CRED_FILE"; fi; \
+	cd $(TF_DNS_DIR) && terraform apply -auto-approve -var="dns_project_id=$(GCP_DNS_PROJECT_ID)" -var="dns_zone_name=$(or $(GCP_DNS_ZONE_NAME),zona-dns-viafluvial-com-br)" -var="application_lb_ip=$(APPLICATION_CLUSTER_IP)" -var="credentials_file=$$CRED_FILE"
 
 deploy-prd: ## Pipeline local de deploy (build + DNS + stack)
 	$(MAKE) ci

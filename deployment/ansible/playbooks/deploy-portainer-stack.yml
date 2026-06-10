@@ -67,12 +67,15 @@
         status_code: 200
       register: endpoints_response
       delegate_to: localhost
+      connection: local
       become: false
-      no_log: true
+      vars:
+        ansible_become: false
+      no_log: "{{ not (portainer_debug | default(false)) }}"
 
     - name: Resolver endpoint id pelo nome
       ansible.builtin.set_fact:
-        portainer_endpoint_id_resolved: "{{ (endpoints_response.json | selectattr('Name', 'equalto', portainer_endpoint_name) | map(attribute='Id') | list | first) | string }}"
+        portainer_endpoint_id_resolved: "{{ ((endpoints_response.json | selectattr('Name', 'equalto', portainer_endpoint_name) | map(attribute='Id') | list | first) | default('')) | string }}"
 
     - name: Validar endpoint resolvido
       ansible.builtin.assert:
@@ -90,8 +93,11 @@
         status_code: 200
       register: swarm_response
       delegate_to: localhost
+      connection: local
       become: false
-      no_log: true
+      vars:
+        ansible_become: false
+      no_log: "{{ not (portainer_debug | default(false)) }}"
 
     - name: Listar stacks existentes no endpoint
       ansible.builtin.uri:
@@ -103,8 +109,11 @@
         status_code: 200
       register: stacks_response
       delegate_to: localhost
+      connection: local
       become: false
-      no_log: true
+      vars:
+        ansible_become: false
+      no_log: "{{ not (portainer_debug | default(false)) }}"
 
     - name: Localizar stack atual por nome
       ansible.builtin.set_fact:
@@ -127,8 +136,11 @@
         status_code: [200, 201, 202]
       when: current_stack == {}
       delegate_to: localhost
+      connection: local
       become: false
-      no_log: true
+      vars:
+        ansible_become: false
+      no_log: "{{ not (portainer_debug | default(false)) }}"
 
     - name: Atualizar stack existente no Portainer
       ansible.builtin.uri:
@@ -146,8 +158,11 @@
         status_code: [200, 201, 202]
       when: current_stack != {}
       delegate_to: localhost
+      connection: local
       become: false
-      no_log: true
+      vars:
+        ansible_become: false
+      no_log: "{{ not (portainer_debug | default(false)) }}"
 
   post_tasks:
     - name: Resumo final

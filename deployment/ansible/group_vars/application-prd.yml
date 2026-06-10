@@ -17,7 +17,7 @@ traefik_router_name: sobre-viafluvial-prd
 
 # Portainer do cluster application
 portainer_url: https://portainer.application.plataforma.prd.viafluvial.com.br
-portainer_endpoint_name: application-prd
+portainer_endpoint_name: application
 portainer_validate_certs: true
 
 # Operacao de deploy
