@@ -30,13 +30,6 @@ export function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   return (
     <section
       id="hero"
@@ -83,18 +76,18 @@ export function HeroSection() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Button
               size="lg"
-              onClick={() => scrollToSection('cta-final')}
+              onClick={() => window.location.assign('https://viafluvial.com.br')}
               className="bg-[#F9C74F] hover:bg-[#F7BE35] text-[#1A5F3B] font-medium text-lg px-8 py-6"
             >
-              {t('hero.cta.newsletter')}
+              {t('platformCta.passengers')}
             </Button>
             <Button
               size="lg"
               variant="outline"
-              onClick={() => scrollToSection('enquete')}
+              onClick={() => window.location.assign('https://viafluvial.com.br/cargas/')}
               className="bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm text-lg px-8 py-6"
             >
-              {t('hero.cta.poll')}
+              {t('platformCta.cargo')}
             </Button>
           </div>
         </div>

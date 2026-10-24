@@ -69,7 +69,7 @@ export function Header() {
                   onClick={() => scrollToSection('cta-final')}
                   className="bg-[#F9C74F] hover:bg-[#F7BE35] text-[#1A5F3B] px-4 py-2 rounded-lg font-semibold text-sm transition-colors"
                 >
-                  Entrar na lista de espera
+                  Acessar a plataforma
                 </button>
               </>
             ) : (
@@ -147,7 +147,7 @@ export function Header() {
                 onClick={() => scrollToSection('cta-final')}
                 className="bg-[#F9C74F] hover:bg-[#F7BE35] text-[#1A5F3B] px-4 py-2 rounded-lg font-semibold text-sm transition-colors"
               >
-                Entrar na lista de espera
+                Acessar a plataforma
               </button>
             </>
           ) : (

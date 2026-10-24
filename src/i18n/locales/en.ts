@@ -1,4 +1,9 @@
 export const translationsEn = {
+  'platformCta.title': 'Via Fluvial is live',
+  'platformCta.subtitle': 'Buy boat tickets and ship cargo and parcels along the Amazon rivers, right from your phone.',
+  'platformCta.passengers': 'Buy a ticket',
+  'platformCta.cargo': 'Ship cargo or a parcel',
+  'platformCta.contact': 'Talk to us',
   // Header
   'nav.home': 'Home',
   'nav.about': 'About the Platform',

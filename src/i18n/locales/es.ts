@@ -1,4 +1,9 @@
 export const translationsEs = {
+  'platformCta.title': 'Via Fluvial ya está disponible',
+  'platformCta.subtitle': 'Compra pasajes de barco y envía cargas y encomiendas por los ríos de la Amazonía, desde tu celular.',
+  'platformCta.passengers': 'Comprar pasaje',
+  'platformCta.cargo': 'Enviar carga o encomienda',
+  'platformCta.contact': 'Habla con nosotros',
   // Header
   'nav.home': 'Inicio',
   'nav.about': 'Sobre la Plataforma',

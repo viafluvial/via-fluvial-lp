@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, redirect } from "react-router";
 import { RootLayout } from "./layouts/RootLayout";
 import { HomePage } from "./pages/HomePage";
 import { MissionPage } from "./pages/MissionPage";
@@ -7,8 +7,6 @@ import { FAQPage } from "./pages/FAQPage";
 import { ContactPage } from "./pages/ContactPage";
 import { PrivacyPage } from "./pages/PrivacyPage";
 import { TermsPage } from "./pages/TermsPage";
-import AdminDashboard from "./pages/AdminDashboard";
-import TestDatabase from "./pages/TestDatabase";
 
 export const router = createBrowserRouter([
   {
@@ -22,14 +20,8 @@ export const router = createBrowserRouter([
       { path: "contato", Component: ContactPage },
       { path: "privacidade", Component: PrivacyPage },
       { path: "termos", Component: TermsPage },
+      // Endereços antigos (como /admin e /test-database, removidos) e desconhecidos voltam para a página inicial.
+      { path: "*", loader: () => redirect("/") },
     ],
-  },
-  {
-    path: "/admin",
-    Component: AdminDashboard,
-  },
-  {
-    path: "/test-database",
-    Component: TestDatabase,
   },
 ]);

@@ -5,10 +5,8 @@ import { BoatSlideshow } from '../components/BoatSlideshow';
 import { ForWhoSection } from '../components/ForWhoSection';
 import { BenefitsSection } from '../components/BenefitsSection';
 import { TravelerQuiz } from '../components/TravelerQuiz';
-import { PollSection } from '../components/PollSection';
-import { SocialProofSection } from '../components/SocialProofSection';
 import { InDevelopmentSection } from '../components/InDevelopmentSection';
-import { FinalCTASection } from '../components/FinalCTASection';
+import { PlatformCTASection } from '../components/PlatformCTASection';
 import { FAQSection } from '../components/FAQSection';
 import { AutoScroll } from '../components/AutoScroll';
 
@@ -28,16 +26,12 @@ export function HomePage() {
       <BenefitsSection />
       {/* Seção 6: Quiz */}
       <TravelerQuiz />
-      {/* Seção 7: Enquete */}
-      <PollSection />
-      {/* Seção 8: Prova Social */}
-      <SocialProofSection />
       {/* Seção 9: Em desenvolvimento */}
       <InDevelopmentSection />
       {/* Seção 10: FAQ */}
       <FAQSection />
-      {/* Seção 11: Faça parte da jornada (CTA Final com contador) */}
-      <FinalCTASection />
+      {/* A plataforma já está no ar: acesso e contatos (sem coleta de dados) */}
+      <PlatformCTASection />
       <AutoScroll />
     </>
   );
