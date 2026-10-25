@@ -3,6 +3,8 @@ title: 'Via Fluvial: passagens de barco pela Amazônia também pelo celular'
 summary: 'A plataforma permite encontrar viagens, pagar por Pix ou cartão e embarcar com bilhete digital, sem fila no porto.'
 type: lancamento
 pubDate: 2026-10-24T11:00:00-04:00
+# Publicar no lançamento oficial: ajustar pubDate e remover a linha draft.
+draft: true
 image: ../../assets/photos/barcos-rio-negro.jpg
 imageAlt: 'Barcos regionais de passageiros atracados no Rio Negro, em Manaus, sob um céu dramático no fim da tarde'
 imageCredit: barcos-rio-negro

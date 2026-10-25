@@ -1,11 +1,11 @@
 ---
-import { getCollection } from 'astro:content';
+import { getPublishedNews } from '../../lib/news';
 import Base from '../../layouts/Base.astro';
 import NewsCard from '../../components/NewsCard.astro';
 import NewsletterBand from '../../components/NewsletterBand.astro';
 import { NEWS_TYPES } from '../../lib/format';
 
-const news = (await getCollection('news')).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const news = await getPublishedNews();
 const presentTypes = Object.entries(NEWS_TYPES).filter(([key]) => news.some((entry) => entry.data.type === key));
 ---
 
@@ -20,6 +20,9 @@ const presentTypes = Object.entries(NEWS_TYPES).filter(([key]) => news.some((ent
       <h1 class="h1 mt-2 !text-[clamp(1.9rem,4.5vw,3rem)]">Notícias da plataforma</h1>
       <p class="lead mt-4 max-w-2xl">Lançamentos, novas rotas, novas funções e novidades da Via Fluvial. Quer saber o que está por vir? Veja <a href="/o-que-vem-por-ai" class="font-bold text-green-700 underline underline-offset-2">o que vem por aí</a>.</p>
 
+      {news.length === 0 ? (
+      <p class="mt-8 rounded-xl bg-green-50 p-5 text-green-900" data-news-soon>As primeiras notícias chegam em breve. Assine a newsletter abaixo para receber as novidades da Via Fluvial por e-mail.</p>
+      ) : (<>
       <div class="mt-8 hidden flex-col gap-4 md:flex-row md:items-end" data-news-filters>
         <div role="group" aria-label="Filtrar por tipo" class="flex flex-wrap gap-2">
           <button type="button" data-filter="all" aria-pressed="true" class="chip">Todas</button>
@@ -36,6 +39,7 @@ const presentTypes = Object.entries(NEWS_TYPES).filter(([key]) => news.some((ent
         {news.map((entry) => <li data-news-item data-type={entry.data.type} data-text={`${entry.data.title} ${entry.data.summary}`.toLowerCase()}><NewsCard entry={entry} /></li>)}
       </ul>
       <p class="mt-8 hidden rounded-xl bg-green-50 p-5 text-green-900" data-news-empty>Nenhuma notícia encontrada para esse filtro.</p>
+      </>)}
     </div>
   </section>
 

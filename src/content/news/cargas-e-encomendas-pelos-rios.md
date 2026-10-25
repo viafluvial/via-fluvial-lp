@@ -3,6 +3,8 @@ title: 'Agora dá para enviar cargas e encomendas pelos rios com a Via Fluvial'
 summary: 'Cotação na hora, pagamento online, acompanhamento da remessa e retirada com QR Code no porto de destino.'
 type: nova-funcao
 pubDate: 2026-10-24T10:00:00-04:00
+# Publicar no lançamento oficial: ajustar pubDate e remover a linha draft.
+draft: true
 image: ../../assets/photos/porto-manaus-carga.jpg
 imageAlt: 'Trabalhadores carregando caixas entre barcos no porto flutuante de Manaus'
 imageCredit: porto-manaus-carga

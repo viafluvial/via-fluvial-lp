@@ -1,4 +1,5 @@
 ---
+import { getPublishedNews } from '../lib/news';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
@@ -15,7 +16,7 @@ import { screens } from '../data/images';
 import { LINKS } from '../data/site';
 import { HISTORY_SHORT, MISSION, VALUES } from '../data/institutional';
 
-const news = (await getCollection('news')).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()).slice(0, 3);
+const news = (await getPublishedNews()).slice(0, 3);
 
 const problems = [
   { icon: 'ticket', title: 'Passagem só no porto', text: 'Garantir o lugar significa ir até o balcão, enfrentar fila e torcer para ainda haver vaga.' },
@@ -354,7 +355,8 @@ const faqJsonLd = {
     </div>
   </section>
 
-  <!-- 5.11 Novidades -->
+  <!-- 5.11 Novidades (só aparece quando houver notícia publicada) -->
+  {news.length > 0 && (
   <section class="section" aria-labelledby="novidades">
     <div class="wrap">
       <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -369,6 +371,7 @@ const faqJsonLd = {
       </ul>
     </div>
   </section>
+  )}
 
   <!-- 5.12 Newsletter -->
   <NewsletterBand />

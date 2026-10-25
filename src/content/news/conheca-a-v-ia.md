@@ -3,6 +3,8 @@ title: 'Conheça a v.IA, a assistente que encontra sua viagem de barco'
 summary: 'Escreva ou fale do jeito que você falaria com uma pessoa, e a v.IA mostra as viagens que combinam com o pedido.'
 type: nova-funcao
 pubDate: 2026-10-24T09:00:00-04:00
+# Publicar no lançamento oficial: ajustar pubDate e remover a linha draft.
+draft: true
 image: ../../assets/news/via-assistente.jpg
 imageAlt: 'Tela da página inicial da Via Fluvial no celular, com a assistente v.IA'
 links:

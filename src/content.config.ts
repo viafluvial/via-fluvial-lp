@@ -11,6 +11,8 @@ const news = defineCollection({
       summary: z.string().max(220),
       type: z.enum(['lancamento', 'nova-rota', 'nova-funcao', 'institucional']),
       pubDate: z.coerce.date(),
+      /** Rascunho: não gera página nem aparece no site (as notícias de lançamento entram no lançamento oficial). */
+      draft: z.boolean().default(false),
       updatedDate: z.coerce.date().optional(),
       image: image(),
       imageAlt: z.string(),

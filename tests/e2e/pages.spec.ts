@@ -41,7 +41,8 @@ test('o site traz robots.txt, sitemap e manifesto com o tema verde', async ({ re
   for (const route of ['/barqueiros', '/transportadores', '/parceiros', '/demonstracao', '/quem-somos', '/novidades', '/o-que-vem-por-ai', '/contato', '/privacidade', '/termos']) {
     expect(sitemap).toContain(`https://sobre.viafluvial.com.br${route}`);
   }
-  expect(sitemap).toContain('/novidades/conheca-a-v-ia');
+  // Notícias de lançamento são rascunho até o lançamento oficial: não podem ir para o sitemap.
+  expect(sitemap).not.toContain('/novidades/conheca-a-v-ia');
   const manifest = await (await request.get('/site.webmanifest')).json();
   expect(manifest.name).toBe('Via Fluvial');
   expect(manifest.theme_color.toLowerCase()).toBe('#1a5f3b');

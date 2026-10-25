@@ -95,33 +95,22 @@ test.describe('números da plataforma (5.9)', () => {
 });
 
 test.describe('conteúdo', () => {
-  test('home traz as três notícias aprovadas e o link "O que vem por aí"', async ({ page }) => {
+  test('notícias de lançamento ficam escondidas até o lançamento oficial', async ({ page }) => {
     await page.goto('/');
-    const cards = page.locator('[data-news-card]');
-    await expect(cards).toHaveCount(3);
-    await expect(page.getByRole('link', { name: 'O que vem por aí →' })).toBeVisible();
+    await expect(page.locator('[data-news-card]')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Notícias da plataforma' })).toHaveCount(0);
   });
 
-  test('novidades: filtro por tipo e busca', async ({ page }) => {
+  test('novidades: sem notícias publicadas, avisa que chegam em breve e oferece a newsletter', async ({ page }) => {
     await page.goto('/novidades');
-    const items = page.locator('[data-news-item]:visible');
-    await expect(items).toHaveCount(3);
-    await page.getByRole('button', { name: 'Lançamento' }).click();
-    await expect(items).toHaveCount(1);
-    await page.getByRole('button', { name: 'Todas' }).click();
-    await page.getByLabel('Buscar nas notícias').fill('v.IA');
-    await expect(items).toHaveCount(1);
-    await page.getByLabel('Buscar nas notícias').fill('zzzz');
-    await expect(items).toHaveCount(0);
-    await expect(page.getByText('Nenhuma notícia encontrada')).toBeVisible();
+    await expect(page.locator('[data-news-soon]')).toContainText('As primeiras notícias chegam em breve');
+    await expect(page.locator('[data-news-item]')).toHaveCount(0);
+    await expect(page.getByTestId('newsletter-form')).toBeVisible();
   });
 
-  test('notícia traz link para o app, compartilhar e prévia para redes', async ({ page }) => {
-    await page.goto('/novidades/cargas-e-encomendas-pelos-rios');
-    await expect(page.getByTestId('news-body')).toContainText('O módulo de cargas está sendo liberado aos poucos, rota por rota.');
-    await expect(page.getByRole('link', { name: /Abrir o app de cargas/ })).toHaveAttribute('href', 'https://viafluvial.com.br/cargas/');
-    await expect(page.locator('main').getByRole('link', { name: /WhatsApp/ })).toHaveAttribute('href', /^https:\/\/wa\.me\/\?text=/);
-    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'article');
+  test('páginas das notícias em rascunho não existem', async ({ page }) => {
+    const response = await page.goto('/novidades/cargas-e-encomendas-pelos-rios');
+    expect(response?.status()).toBe(404);
   });
 
   test('o que vem por aí: três colunas, sem datas, com o aviso "planos podem mudar"', async ({ page }) => {
