@@ -1,0 +1,66 @@
+/*
+ * Dock flutuante com o mesmo visual dos apps e do portal de conhecimento (portado de
+ * via-fluvial-app-docs: src/components/dock/dock.module.css). Camadas: abaixo da barra superior e do menu móvel.
+ */
+.dock {
+  --vf-dock-bottom: max(1rem, env(safe-area-inset-bottom));
+  position: fixed; left: 0; bottom: var(--vf-dock-bottom); z-index: 150;
+  display: flex; align-items: center;
+}
+
+.handle {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  width: 1.75rem; height: 3rem; padding: 0; border: 0; border-radius: 0 999px 999px 0;
+  background: var(--vf-yellow-400); color: var(--vf-green-700); cursor: pointer;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / .2), 0 8px 10px -6px rgb(0 0 0 / .2);
+  transition: width .15s, background-color .15s;
+}
+/* Área de toque de 44px sem mudar o desenho da alça. */
+.handle::after { content: ''; position: absolute; top: -2px; bottom: -2px; left: 0; width: 44px; }
+.handle:hover { width: 2rem; background: var(--vf-yellow-500); }
+.handle:focus { outline: none; }
+.handle:focus-visible { box-shadow: 0 0 0 2px var(--vf-green-700); }
+.handleIcon { position: relative; }
+.ping { position: absolute; inset: 0; border-radius: 0 999px 999px 0; background: rgb(249 199 79 / .7); animation: vfDockPing 1s cubic-bezier(0, 0, .2, 1) infinite; }
+@keyframes vfDockPing { 75%, 100% { transform: scale(2); opacity: 0; } }
+
+.items { display: flex; align-items: center; gap: .5rem; padding-left: .5rem; visibility: hidden; transition: visibility .3s; }
+.itemsOpen { visibility: visible; }
+.slot { transition: transform .3s ease-out, opacity .3s ease-out; transform: translateX(-2rem) scale(.75); opacity: 0; }
+.itemsOpen .slot { transform: none; opacity: 1; }
+
+.fab {
+  display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; padding: 0;
+  border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--vf-yellow-400); color: var(--vf-green-700) !important; text-decoration: none !important;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / .2), 0 8px 10px -6px rgb(0 0 0 / .2);
+  transition: transform .15s, background-color .15s;
+}
+.fab:hover { transform: scale(1.05); background: var(--vf-yellow-500); }
+.fab:focus { outline: none; }
+.fab:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--vf-green-700); }
+.fab:disabled { cursor: not-allowed; opacity: .5; }
+.fab:disabled:hover { transform: none; background: var(--vf-yellow-400); }
+
+/* Pílula de topo/final: como nos apps, só aparece a partir de 640px e em páginas com rolagem. */
+.pill {
+  position: fixed; right: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 140;
+  display: none; flex-direction: column; gap: .25rem; padding: .25rem; border-radius: 999px;
+  background: #fff; box-shadow: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);
+}
+@media (min-width: 640px) { .pillShow { display: flex; } }
+.pillBtn {
+  display: inline-flex; align-items: center; justify-content: center; padding: .5rem; border: 0; border-radius: 999px;
+  background: rgb(26 95 59 / .1); color: var(--vf-green-700); cursor: pointer; transition: background-color .15s;
+}
+.pillBtn:hover { background: rgb(26 95 59 / .2); }
+.pillBtn:focus { outline: none; }
+.pillBtn:focus-visible { box-shadow: 0 0 0 2px var(--vf-green-700); }
+
+@media (prefers-reduced-motion: reduce) {
+  .handle, .items, .slot, .fab, .pillBtn { transition: none; }
+  .ping { animation: none; }
+  .fab:hover { transform: none; }
+}
+
+@media print { .dock, .pill { display: none !important; } }

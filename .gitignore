@@ -43,3 +43,9 @@ Thumbs.db
 modelos/*.zip
 
 credentials/sa.json
+
+# Astro e testes
+.astro/
+test-results/
+playwright-report/
+lighthouse-reports/

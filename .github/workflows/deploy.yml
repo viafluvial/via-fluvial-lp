@@ -64,6 +64,9 @@ jobs:
           context: .
           file: ./Dockerfile
           target: runtime
+          build-args: |
+            APP_BUILD_ID=${{ github.sha }}
+            APP_VERSION=${{ github.sha }}
           push: true
           tags: |
             ${{ steps.image.outputs.ref }}

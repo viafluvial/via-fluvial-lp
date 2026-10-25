@@ -1,0 +1,380 @@
+@import 'tailwindcss' source(none);
+@source '../';
+
+/*
+ * Identidade Via Fluvial (mesmos tokens do portal de conhecimento e dos apps):
+ * verde #1A5F3B, amarelo #F9C74F e a pilha de fontes do sistema (sem download de fonte, página leve).
+ */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+
+  --color-green-50: #eef7f1;
+  --color-green-100: #eaf6ee;
+  --color-green-200: #d7e9de;
+  --color-green-300: #a8d5ba;
+  --color-green-600: #1f7347;
+  --color-green-700: #1a5f3b;
+  --color-green-800: #154d30;
+  --color-green-900: #0e3b2a;
+
+  --color-yellow-50: #fff8e3;
+  --color-yellow-400: #f9c74f;
+  --color-yellow-500: #f7be35;
+
+  --color-ink: #1f2937;
+  --color-muted: #4b5563;
+  --color-line: #e2e8e4;
+  --color-surface: #f6faf7;
+
+  --breakpoint-xs: 30rem;
+  --breakpoint-nav: 80rem;
+}
+
+:root {
+  --vf-green-700: #1a5f3b;
+  --vf-green-800: #154d30;
+  --vf-green-900: #0e3b2a;
+  --vf-yellow-400: #f9c74f;
+  --vf-yellow-500: #f7be35;
+  --header-h: 4rem;
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: #fff;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 3px solid var(--vf-yellow-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.on-green :focus-visible,
+.bg-green-700 :focus-visible,
+.bg-green-800 :focus-visible,
+.bg-green-900 :focus-visible {
+  outline-color: var(--vf-yellow-400);
+}
+
+@layer components {
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  z-index: 300;
+  background: var(--vf-yellow-400);
+  color: var(--vf-green-700);
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
+.skip-link:focus {
+  top: 0.5rem;
+}
+
+/* Contêiner e ritmo vertical das seções. */
+.wrap {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 640px) {
+  .wrap {
+    padding-inline: 2rem;
+  }
+}
+.section {
+  padding-block: 3.5rem;
+}
+@media (min-width: 768px) {
+  .section {
+    padding-block: 5rem;
+  }
+}
+
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vf-green-700);
+}
+.on-green .eyebrow {
+  color: var(--vf-yellow-400);
+}
+
+.h1 {
+  font-size: clamp(2rem, 5.2vw, 3.5rem);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.h2 {
+  font-size: clamp(1.625rem, 3.6vw, 2.5rem);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.h3 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 700;
+}
+.lead {
+  font-size: clamp(1.0625rem, 2vw, 1.25rem);
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+.on-green .lead {
+  color: #e6f2ea;
+}
+
+/* Botões: áreas de toque de 44px, mesmo padrão amarelo e contorno dos apps. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 2px solid transparent;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s,
+    transform 0.15s;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-yellow {
+  background: var(--vf-yellow-400);
+  color: var(--vf-green-700);
+}
+.btn-yellow:hover {
+  background: var(--vf-yellow-500);
+}
+.btn-green {
+  background: var(--vf-green-700);
+  color: #fff;
+}
+.btn-green:hover {
+  background: var(--vf-green-800);
+}
+.btn-outline {
+  border-color: var(--vf-green-700);
+  color: var(--vf-green-700);
+  background: transparent;
+}
+.btn-outline:hover {
+  background: var(--color-green-50);
+}
+.btn-outline-light {
+  border-color: #fff;
+  color: #fff;
+  background: transparent;
+}
+.btn-outline-light:hover {
+  background: rgb(255 255 255 / 0.14);
+}
+.btn-lg {
+  min-height: 3.25rem;
+  padding-inline: 1.75rem;
+  font-size: 1.0625rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgb(14 59 42 / 0.04);
+}
+
+.icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.875rem;
+  background: var(--color-green-100);
+  color: var(--vf-green-700);
+  flex: none;
+}
+.on-green .icon-badge {
+  background: rgb(255 255 255 / 0.12);
+  color: var(--vf-yellow-400);
+}
+
+/* Revelar ao rolar: movimento sutil, desligado com "reduzir movimento". */
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s ease-out,
+      transform 0.5s ease-out;
+  }
+  .js .reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Texto corrido das notícias e páginas legais. */
+.prose-vf {
+  max-width: 44rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: #2b3440;
+}
+.prose-vf > * + * {
+  margin-top: 1.1rem;
+}
+.prose-vf h2 {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 800;
+  margin-top: 2.25rem;
+  color: var(--color-ink);
+}
+.prose-vf h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 1.75rem;
+  color: var(--color-ink);
+}
+.prose-vf ul {
+  list-style: disc;
+  padding-left: 1.4rem;
+}
+.prose-vf ol {
+  list-style: decimal;
+  padding-left: 1.4rem;
+}
+.prose-vf li + li {
+  margin-top: 0.4rem;
+}
+.prose-vf a {
+  color: var(--vf-green-700);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-vf a:hover {
+  color: var(--vf-green-900);
+}
+.prose-vf strong {
+  color: var(--color-ink);
+}
+
+/* Formulários. */
+.field label,
+.field legend {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin-bottom: 0.35rem;
+  color: var(--color-ink);
+}
+.input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid #8a9a92;
+  border-radius: 0.65rem;
+  background: #fff;
+  color: var(--color-ink);
+  font: inherit;
+}
+.input:focus {
+  outline: 3px solid var(--vf-yellow-500);
+  outline-offset: 1px;
+  border-color: var(--vf-green-700);
+}
+.input[aria-invalid='true'] {
+  border-color: #b42318;
+  background: #fff6f5;
+}
+.field-error {
+  color: #b42318;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+.field-hint {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.hp {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Marcação "sr-only" também para componentes React. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+}
+
+@media print {
+  header[data-site-header],
+  footer[data-site-footer],
+  .no-print {
+    display: none !important;
+  }
+}

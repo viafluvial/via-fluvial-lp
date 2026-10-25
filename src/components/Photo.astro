@@ -1,0 +1,86 @@
+---
+/**
+ * Foto licenciada com AVIF/WebP responsivos. O texto alternativo e o crédito vêm de src/content/credits/photos.json.
+ * Sem hotlink: todas as imagens são baixadas e otimizadas no build.
+ */
+import { Picture } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import { photos } from '../data/images';
+
+interface Props {
+  id: string;
+  sizes?: string;
+  widths?: number[];
+  alt?: string;
+  eager?: boolean;
+  class?: string;
+  imgClass?: string;
+  /** Mostra "Foto: autor (licença)" sobre a imagem, com link para a página de créditos. */
+  credit?: 'overlay' | 'caption' | false;
+  position?: string;
+}
+
+const {
+  id,
+  sizes = '(min-width: 1152px) 1152px, 100vw',
+  widths = [480, 768, 1152, 1600],
+  alt,
+  eager = false,
+  class: className = '',
+  imgClass = '',
+  credit = false,
+  position = 'center',
+} = Astro.props;
+
+const image = photos[id];
+const entry = await getEntry('credits', id);
+if (!image || !entry) throw new Error(`Foto sem imagem ou sem crédito: ${id}`);
+const { author, license } = entry.data;
+---
+
+{
+  credit === 'caption' ? (
+    <figure class="m-0">
+      <div class:list={['relative overflow-hidden', className]}>
+        <Picture
+          src={image}
+          formats={['avif', 'webp']}
+          fallbackFormat="webp"
+          widths={widths}
+          sizes={sizes}
+          alt={alt ?? entry.data.alt}
+          loading={eager ? 'eager' : 'lazy'}
+          decoding="async"
+          class:list={['h-full w-full object-cover', imgClass]}
+          style={`object-position: ${position}`}
+          pictureAttributes={{ class: 'block h-full w-full' }}
+        />
+      </div>
+      <figcaption class="mt-2 text-xs text-muted">
+        <a href={`/creditos#${id}`} class="underline underline-offset-2">Foto: {author} ({license})</a>
+      </figcaption>
+    </figure>
+  ) : (
+    <figure class:list={[!className.includes('absolute') && 'relative', 'm-0 overflow-hidden', className]}>
+      <Picture
+        src={image}
+        formats={['avif', 'webp']}
+        fallbackFormat="webp"
+        widths={widths}
+        sizes={sizes}
+        alt={alt ?? entry.data.alt}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : 'auto'}
+        decoding={eager ? 'sync' : 'async'}
+        class:list={['h-full w-full object-cover', imgClass]}
+        style={`object-position: ${position}`}
+        pictureAttributes={{ class: 'block h-full w-full' }}
+      />
+      {credit === 'overlay' && (
+        <figcaption class="absolute bottom-1.5 right-2 rounded bg-black/55 px-2 py-0.5 text-[0.7rem] leading-tight text-white">
+          <a href={`/creditos#${id}`} class="underline-offset-2 hover:underline">Foto: {author} ({license})</a>
+        </figcaption>
+      )}
+    </figure>
+  )
+}

@@ -1,0 +1,401 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import PhoneFrame from '../components/PhoneFrame.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Faq, { type FaqItem } from '../components/Faq.astro';
+import NewsCard from '../components/NewsCard.astro';
+import NumbersGrid from '../components/NumbersGrid.astro';
+import NewsletterBand from '../components/NewsletterBand.astro';
+import PlatformStats from '../components/islands/PlatformStats';
+import { screens } from '../data/images';
+import { LINKS } from '../data/site';
+import { HISTORY_SHORT, MISSION, VALUES } from '../data/institutional';
+
+const news = (await getCollection('news')).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()).slice(0, 3);
+
+const problems = [
+  { icon: 'ticket', title: 'Passagem só no porto', text: 'Garantir o lugar significa ir até o balcão, enfrentar fila e torcer para ainda haver vaga.' },
+  { icon: 'clock', title: 'Horário incerto', text: 'Saída, atraso e chegada passam de boca em boca. Quem espera no porto raramente sabe quando o barco parte.' },
+  { icon: 'package-search', title: 'Encomenda sem rastreio', text: 'Mandar uma caixa pelo rio costuma ser um ato de fé: sem comprovante, sem aviso e sem saber onde ela está.' },
+  { icon: 'notebook-pen', title: 'Barqueiro vendendo no papel', text: 'Reservas anotadas à mão, lugares controlados no caderno e pouca visibilidade para quem procura viagem.' },
+];
+
+const travelSteps = [
+  { icon: 'search', title: 'Buscar', text: 'Escolha origem, destino e data e compare as viagens.' },
+  { icon: 'credit-card', title: 'Pagar', text: 'Pix ou cartão. A reserva só confirma com o pagamento.' },
+  { icon: 'qr-code', title: 'Embarcar', text: 'Apresente o bilhete com QR Code no embarque.' },
+];
+const shipSteps = [
+  { icon: 'calculator', title: 'Cotar', text: 'Informe o que vai enviar, o peso e as medidas e veja o preço na hora.' },
+  { icon: 'warehouse', title: 'Entregar no porto', text: 'A carga é conferida, fotografada e etiquetada pelo agente de porto.' },
+  { icon: 'scan-qr-code', title: 'Retirar com QR', text: 'Quem recebe retira no porto de destino, com QR Code e documento com foto.' },
+];
+
+const audiences = [
+  {
+    icon: 'ship',
+    title: 'Barqueiros',
+    text: 'Venda online, check-in por QR, controle das passagens, financeiro com saque e vitrine da embarcação.',
+    href: '/barqueiros',
+    cta: 'Para barqueiros',
+  },
+  {
+    icon: 'truck',
+    title: 'Transportadores',
+    text: 'Tarifas próprias, operações de carga, propostas para cargas especiais e manifesto.',
+    href: '/transportadores',
+    cta: 'Para transportadores',
+  },
+  {
+    icon: 'store',
+    title: 'Agências',
+    text: 'Painel para vender passagens das embarcações parceiras.',
+    href: '/parceiros#agencias',
+    cta: 'Para agências',
+  },
+  {
+    icon: 'building-2',
+    title: 'Empresas',
+    text: 'Fretamento, volume e integração com sistemas.',
+    href: '/parceiros#empresas',
+    cta: 'Para empresas',
+  },
+];
+
+const trust = [
+  { icon: 'badge-check', title: 'Embarcações e barqueiros aprovados', text: 'Cada embarcação passa pela análise da plataforma antes de aparecer para os passageiros.' },
+  { icon: 'star', title: 'Avaliações verificadas de passageiros', text: 'Só quem embarcou na viagem pode avaliá-la.' },
+  { icon: 'shield-check', title: 'Pagamento seguro', text: 'Pix ou cartão. A reserva só é confirmada quando o pagamento é aprovado.' },
+  { icon: 'camera', title: 'Carga conferida no porto, com fotos', text: 'O agente de porto confere, fotografa e etiqueta a carga antes do embarque.' },
+  { icon: 'lock-keyhole', title: 'Proteção de dados (LGPD)', text: 'Consentimento claro nos formulários e política de privacidade pública.' },
+  { icon: 'headset', title: 'Suporte por chat', text: 'Atendimento pelo chat da plataforma, direto do app e do botão de suporte deste site.' },
+];
+
+const faq: FaqItem[] = [
+  {
+    q: 'Preciso instalar um aplicativo?',
+    a: 'Não. A Via Fluvial funciona direto no navegador do celular e pode ser adicionada à tela inicial como um aplicativo.',
+  },
+  {
+    q: 'Como pago a passagem?',
+    a: 'Por Pix ou cartão de crédito. A reserva só é confirmada quando o pagamento é aprovado, e cada passageiro recebe um bilhete com QR Code.',
+  },
+  {
+    q: 'Posso enviar cargas e encomendas pela Via Fluvial?',
+    a: 'Sim. O módulo de cargas está sendo liberado aos poucos, rota por rota. No app de cargas você vê as rotas atendidas e faz a cotação na hora.',
+  },
+  {
+    q: 'Sou dono de embarcação. Como entro na plataforma?',
+    a: 'O cadastro de barqueiro é feito no app e passa por análise da plataforma. Na página para barqueiros você vê os passos e pode agendar uma demonstração.',
+  },
+  {
+    q: 'Quero conhecer a plataforma funcionando na minha operação. É possível?',
+    a: 'Sim. Agende uma demonstração e nossa equipe entra em contato, com meta de resposta de 1 dia útil.',
+  },
+  {
+    q: 'Como falo com a Via Fluvial?',
+    a: 'Pelo chat de suporte da plataforma, pelo WhatsApp +55 92 99459-3224, pelo e-mail contato@viafluvial.com.br ou pelo formulário da página de contato.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+---
+
+<Base
+  title="Via Fluvial: o transporte fluvial da Amazônia, conectado"
+  description="Passagens, cargas e encomendas pelos rios da Amazônia, com pagamento seguro, bilhete digital e acompanhamento. Para quem viaja, envia e trabalha no rio."
+  path="/"
+  jsonLd={[faqJsonLd]}
+>
+  <!-- 5.2 Abertura -->
+  <section class="on-green relative isolate overflow-hidden bg-green-900 text-white">
+    <Photo id="hero-mamiraua" eager class="absolute inset-0 -z-20" sizes="100vw" widths={[480, 768, 1152, 1600, 2000]} position="50% 62%" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-green-900/90 via-green-900/60 to-green-900/15" aria-hidden="true"></div>
+    <div class="wrap grid items-center gap-10 py-16 md:py-24 lg:grid-cols-[1.35fr_1fr] lg:py-28">
+      <div>
+        <h1 class="h1">O transporte fluvial da Amazônia, conectado.</h1>
+        <p class="lead mt-6 max-w-2xl">
+          Passagens, cargas e encomendas pelos rios, com pagamento seguro, bilhete digital e acompanhamento - para quem viaja, quem envia e quem trabalha no rio.
+        </p>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <a href={LINKS.app('hero')} class="btn btn-yellow btn-lg">Viajar ou enviar</a>
+          <a href="#parceiros" class="btn btn-outline-light btn-lg">Sou parceiro</a>
+        </div>
+      </div>
+      <div class="hidden lg:block">
+        <PhoneFrame src={screens.passageirosMobile} alt="Tela inicial do app da Via Fluvial no celular, com o assistente v.IA" eager sizes="280px" />
+      </div>
+    </div>
+    <p class="wrap pb-3 text-right text-[0.7rem] text-white/80">
+      <a href="/creditos#hero-mamiraua" class="underline-offset-2 hover:underline">Foto: Phietica Silva (CC BY-SA 4.0)</a>
+    </p>
+  </section>
+
+  <!-- 5.3 O problema -->
+  <section class="section" aria-labelledby="problema">
+    <div class="wrap">
+      <SectionHead eyebrow="O problema" id="problema" title="Viajar e enviar pelo rio ainda depende do balcão do porto" />
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          problems.map((item) => (
+            <li class="card reveal flex flex-col gap-3">
+              <span class="icon-badge"><Icon name={item.icon} size={26} /></span>
+              <h3 class="h3 text-green-900">{item.title}</h3>
+              <p class="text-muted leading-relaxed">{item.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5.4 A Amazônia e os rios em números -->
+  <section class="section bg-surface" aria-labelledby="numeros">
+    <div class="wrap">
+      <SectionHead
+        eyebrow="O tamanho do desafio"
+        id="numeros"
+        title="A Amazônia e os rios em números"
+        lead="Dados oficiais mostram o tamanho dos rios da região e o movimento de quem depende deles. Cada número traz o ano e a fonte, com link para a publicação original."
+      />
+      <div class="reveal mt-10"><NumbersGrid onlyFeatured /></div>
+      <p class="mt-6">
+        <a href="/quem-somos#numeros" class="inline-flex min-h-11 items-center font-bold text-green-700 hover:underline">Ver todos os números e as fontes →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- 5.5 A solução: dois negócios, uma plataforma -->
+  <section class="section" aria-labelledby="solucao">
+    <div class="wrap">
+      <SectionHead eyebrow="A solução" id="solucao" title="Dois negócios, uma plataforma" lead="A Via Fluvial junta a venda de passagens e o transporte de cargas e encomendas em um só lugar, para quem viaja, quem envia e quem opera no rio." />
+      <div class="mt-10 grid gap-6 lg:grid-cols-2">
+        <article id="passageiros" class="reveal flex scroll-mt-24 flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-sm">
+          <Photo id="barcos-rio-negro" class="aspect-[16/8]" sizes="(min-width: 1024px) 560px, 92vw" widths={[480, 768, 1100]} position="50% 55%" credit="overlay" />
+          <div class="flex flex-1 flex-col p-6 md:p-8">
+            <p class="eyebrow">Viagens de passageiros</p>
+            <h3 class="h2 mt-1 !text-[1.75rem]">Encontre a viagem e embarque sem fila</h3>
+            <ul class="mt-5 space-y-3">
+              {
+                [
+                  ['search', 'Encontrar a viagem', 'por origem, destino e data, comparando preço, horário e comodidades.'],
+                  ['credit-card', 'Pagar por Pix ou cartão', 'e ter a reserva confirmada com o pagamento aprovado.'],
+                  ['qr-code', 'Embarcar com bilhete QR', 'direto do celular, sem papel.'],
+                  ['map-pin', 'Acompanhar a viagem', 'com situação, avisos de atraso e chegada prevista.'],
+                ].map(([icon, strong, rest]) => (
+                  <li class="flex gap-3">
+                    <Icon name={icon} size={22} class="mt-0.5 flex-none text-green-700" />
+                    <span><strong class="text-green-900">{strong}</strong> {rest}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <div class="mt-auto pt-7">
+              <a href={LINKS.app('solucao-passageiros')} class="btn btn-green">Abrir o app</a>
+            </div>
+          </div>
+        </article>
+
+        <article id="cargas" class="reveal flex scroll-mt-24 flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-sm">
+          <Photo id="porto-manaus-carga" class="aspect-[16/8]" sizes="(min-width: 1024px) 560px, 92vw" widths={[480, 768, 1100]} position="50% 60%" credit="overlay" />
+          <div class="flex flex-1 flex-col p-6 md:p-8">
+            <p class="eyebrow">Cargas e encomendas</p>
+            <h3 class="h2 mt-1 !text-[1.75rem]">Envie, acompanhe e retire com segurança</h3>
+            <ul class="mt-5 space-y-3">
+              {
+                [
+                  ['calculator', 'Cotar na hora', 'informando o que vai enviar, o peso e as medidas.'],
+                  ['ship', 'Frete especial ou fretamento', 'para itens fora do padrão ou uma embarcação inteira.'],
+                  ['route', 'Acompanhar até a retirada', 'com a situação da remessa no app.'],
+                  ['scan-qr-code', 'Retirar com QR', 'no porto de destino, com documento com foto.'],
+                ].map(([icon, strong, rest]) => (
+                  <li class="flex gap-3">
+                    <Icon name={icon} size={22} class="mt-0.5 flex-none text-green-700" />
+                    <span><strong class="text-green-900">{strong}</strong> {rest}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="mt-4 text-sm text-muted">O módulo de cargas está sendo liberado aos poucos, rota por rota.</p>
+            <div class="mt-auto pt-6">
+              <a href={LINKS.cargas('solucao-cargas')} class="btn btn-green">Abrir o app de cargas</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5.6 Como funciona -->
+  <section class="section bg-surface" aria-labelledby="como-funciona">
+    <div class="wrap">
+      <SectionHead eyebrow="Como funciona" id="como-funciona" title="Três passos para viajar, três para enviar" />
+      <div class="mt-10 grid gap-8 lg:grid-cols-2">
+        {
+          [
+            { name: 'Viajar', steps: travelSteps },
+            { name: 'Enviar', steps: shipSteps },
+          ].map((group) => (
+            <div class="reveal rounded-3xl border border-line bg-white p-6 md:p-8">
+              <h3 class="h3 text-green-900">{group.name}</h3>
+              <ol class="mt-5 space-y-5">
+                {group.steps.map((step, index) => (
+                  <li class="flex gap-4">
+                    <span class="icon-badge relative">
+                      <Icon name={step.icon} size={24} />
+                      <span class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-400 text-xs font-extrabold text-green-900" aria-hidden="true">{index + 1}</span>
+                    </span>
+                    <div>
+                      <p class="font-extrabold text-green-900"><span class="sr-only">Passo {index + 1}: </span>{step.title}</p>
+                      <p class="mt-0.5 text-muted">{step.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))
+        }
+      </div>
+      <p class="mt-6">
+        <a href={LINKS.docs} target="_blank" rel="noopener" class="inline-flex min-h-11 items-center font-bold text-green-700 hover:underline">
+          Ver o passo a passo completo na Central de Ajuda →<span class="sr-only"> (abre em nova aba)</span>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- 5.7 Para quem trabalha no rio -->
+  <section id="parceiros" class="section scroll-mt-20" aria-labelledby="quem-trabalha">
+    <div class="wrap">
+      <SectionHead eyebrow="Para parceiros" id="quem-trabalha" title="Para quem trabalha no rio" lead="Ferramentas para vender mais, operar com controle e receber com clareza." />
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          audiences.map((item) => (
+            <li class="card reveal flex flex-col gap-3">
+              <span class="icon-badge"><Icon name={item.icon} size={26} /></span>
+              <h3 class="h3 text-green-900">{item.title}</h3>
+              <p class="flex-1 leading-relaxed text-muted">{item.text}</p>
+              <a href={item.href} class="btn btn-outline mt-2 w-full" aria-label={`${item.cta}: saiba mais`}>{item.cta}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5.8 Agendar uma demonstração -->
+  <CtaBand id="demonstracao-faixa" title="Quer ver a plataforma funcionando na sua operação?" text="Conte um pouco sobre o seu negócio e a gente mostra, ao vivo, como a Via Fluvial pode ajudar.">
+    <a href="/demonstracao" data-demo-open class="btn btn-green btn-lg">Agendar demonstração</a>
+  </CtaBand>
+
+  <!-- 5.9 Por que confiar -->
+  <section class="section" aria-labelledby="confiar">
+    <div class="wrap">
+      <SectionHead eyebrow="Confiança" id="confiar" title="Por que confiar na Via Fluvial" />
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          trust.map((item) => (
+            <li class="card reveal flex gap-4">
+              <span class="icon-badge"><Icon name={item.icon} size={26} /></span>
+              <div>
+                <h3 class="font-extrabold text-green-900">{item.title}</h3>
+                <p class="mt-1 leading-relaxed text-muted">{item.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-6 rounded-2xl border border-green-200 bg-green-50 px-6 py-5 text-center" aria-label="Números da plataforma">
+        <PlatformStats client:visible />
+      </div>
+    </div>
+  </section>
+
+  <!-- Perguntas frequentes (FAQPage) -->
+  <section class="section bg-surface" aria-labelledby="faq">
+    <div class="wrap">
+      <SectionHead eyebrow="Perguntas frequentes" id="faq" title="O que mais perguntam" />
+      <div class="mt-8 max-w-3xl"><Faq items={faq} /></div>
+    </div>
+  </section>
+
+  <!-- 5.10 Propósito -->
+  <section class="section on-green bg-green-900 text-white" aria-labelledby="proposito">
+    <div class="wrap">
+      <p class="eyebrow">Nosso propósito</p>
+      <h2 id="proposito" class="h2 mt-2 max-w-4xl">{MISSION}</h2>
+      <ul class="mt-10 grid gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          VALUES.map((value) => (
+            <li class="flex gap-4">
+              <span class="icon-badge"><Icon name={value.icon} size={24} /></span>
+              <div>
+                <h3 class="font-extrabold">{value.title}</h3>
+                <p class="mt-0.5 text-[0.9375rem] leading-snug text-green-100">{value.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-10 max-w-3xl text-lg leading-relaxed text-green-100">{HISTORY_SHORT}</p>
+      <p class="mt-8"><a href="/quem-somos" class="btn btn-yellow btn-lg">Conheça a Via Fluvial</a></p>
+    </div>
+  </section>
+
+  <!-- 5.11 Novidades -->
+  <section class="section" aria-labelledby="novidades">
+    <div class="wrap">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <SectionHead eyebrow="Novidades" id="novidades" title="Notícias da plataforma" />
+        <p class="flex flex-wrap gap-x-6">
+          <a href="/novidades" class="inline-flex min-h-11 items-center font-bold text-green-700 hover:underline">Ver todas →</a>
+          <a href="/o-que-vem-por-ai" class="inline-flex min-h-11 items-center font-bold text-green-700 hover:underline">O que vem por aí →</a>
+        </p>
+      </div>
+      <ul class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {news.map((entry) => <li class="reveal"><NewsCard entry={entry} /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5.12 Newsletter -->
+  <NewsletterBand />
+
+  <!-- 5.13 Investidores e poder público -->
+  <section class="section" aria-labelledby="investidores">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-2">
+      <div>
+        <p class="eyebrow">Investidores e poder público</p>
+        <h2 id="investidores" class="h2 mt-2">Uma oportunidade com impacto na região</h2>
+        <dl class="mt-6 space-y-4">
+          <div>
+            <dt class="font-extrabold text-green-900">Oportunidade</dt>
+            <dd class="mt-0.5 text-muted">A Região Hidrográfica Amazônica concentra 82,52% das vias economicamente navegadas do Brasil (ANTAQ, 2024), e a compra de passagens e o envio de cargas ainda dependem do balcão do porto.</dd>
+          </div>
+          <div>
+            <dt class="font-extrabold text-green-900">Impacto na região</dt>
+            <dd class="mt-0.5 text-muted">Renda para barqueiros e transportadores, desenvolvimento local e cuidado com os rios.</dd>
+          </div>
+          <div>
+            <dt class="font-extrabold text-green-900">Tração</dt>
+            <dd class="mt-0.5 text-muted">Só dados reais: os números da operação são apresentados em conversa, com a metodologia, e aparecem aqui quando passam dos mínimos de publicação.</dd>
+          </div>
+        </dl>
+        <p class="mt-8"><a href="/contato?assunto=INVESTIDORES" class="btn btn-green btn-lg">Fale conosco</a></p>
+      </div>
+      <Photo id="casa-flutuante-ubim" class="aspect-[16/10] rounded-3xl shadow-lg" sizes="(min-width: 1024px) 560px, 92vw" widths={[480, 768, 1100]} credit="caption" />
+    </div>
+  </section>
+</Base>

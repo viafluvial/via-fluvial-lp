@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ContactForm from '../components/islands/ContactForm';
+import { LINKS, SITE } from '../data/site';
+
+const channels = [
+  {
+    icon: 'headset',
+    title: 'Chat de suporte',
+    text: 'Para dúvidas de quem já usa a plataforma, com a sua conta.',
+    label: 'Abrir o chat',
+    href: LINKS.support,
+    external: true,
+  },
+  {
+    icon: 'message-circle',
+    title: 'WhatsApp',
+    text: SITE.whatsappDisplay,
+    label: 'Chamar no WhatsApp',
+    href: LINKS.whatsapp,
+    external: true,
+  },
+  {
+    icon: 'mail',
+    title: 'E-mail institucional',
+    text: SITE.email,
+    label: 'Escrever um e-mail',
+    href: LINKS.mailto,
+    external: false,
+  },
+];
+---
+
+<Base
+  title="Contato"
+  description="Fale com a Via Fluvial: chat de suporte, WhatsApp, e-mail institucional e formulário para parcerias, imprensa, investidores e poder público."
+  path="/contato"
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Contato</p>
+      <h1 class="h1 mt-2 !text-[clamp(1.9rem,4.5vw,3rem)]">Fale com a Via Fluvial</h1>
+      <p class="lead mt-4 max-w-2xl">Escolha o canal que for melhor para você. Para parcerias, imprensa, investidores e poder público, use o formulário.</p>
+
+      <ul class="mt-10 grid gap-4 md:grid-cols-3">
+        {
+          channels.map((channel) => (
+            <li class="card flex flex-col gap-2">
+              <span class="icon-badge"><Icon name={channel.icon} size={24} /></span>
+              <h2 class="mt-2 text-lg font-extrabold text-green-900">{channel.title}</h2>
+              <p class="flex-1 text-muted">{channel.text}</p>
+              <a
+                href={channel.href}
+                class="btn btn-outline mt-2"
+                {...(channel.external ? { target: '_blank', rel: 'noopener' } : {})}
+              >
+                {channel.label}
+                {channel.external && <span class="sr-only"> (abre em nova aba)</span>}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="card mx-auto mt-12 max-w-3xl !p-5 sm:!p-8" id="formulario">
+        <h2 class="text-2xl font-extrabold text-green-900">Envie uma mensagem</h2>
+        <p class="mt-1 text-muted">Respondemos em até 1 dia útil, pelo e-mail informado.</p>
+        <div class="mt-6">
+          <ContactForm client:load />
+          <noscript>
+            <p class="rounded-xl border-2 border-green-700 bg-green-50 p-4 text-sm text-green-900">
+              Para enviar o formulário, ative o JavaScript do navegador ou escreva para {SITE.email}.
+            </p>
+          </noscript>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,30 @@
+---
+/** Newsletter (5.12): "Receba as novidades da Via Fluvial", com confirmação por e-mail. */
+import NewsletterForm from './islands/NewsletterForm';
+
+interface Props {
+  id?: string;
+  title?: string;
+  text?: string;
+}
+const {
+  id = 'newsletter',
+  title = 'Receba as novidades da Via Fluvial',
+  text = 'Lançamentos, novas rotas e funções da plataforma, uma vez por mês ou quando houver novidade. Você confirma a inscrição por e-mail e cancela com um clique.',
+} = Astro.props;
+---
+
+<section id={id} class="on-green bg-green-800 text-white section" aria-labelledby={`${id}-titulo`}>
+  <div class="wrap grid items-center gap-8 lg:grid-cols-2">
+    <div>
+      <h2 id={`${id}-titulo`} class="h2">{title}</h2>
+      <p class="lead mt-4">{text}</p>
+    </div>
+    <div class="rounded-2xl bg-white p-5 text-ink shadow-xl sm:p-6">
+      <NewsletterForm client:visible />
+      <noscript>
+        <p class="text-sm text-muted">Para se inscrever, ative o JavaScript ou escreva para contato@viafluvial.com.br.</p>
+      </noscript>
+    </div>
+  </div>
+</section>

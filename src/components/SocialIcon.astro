@@ -1,0 +1,28 @@
+---
+/** Ícones das redes sociais (Simple Icons, CC0), embutidos como SVG. Só são desenhados quando há endereço. */
+import * as simple from 'simple-icons';
+
+interface Props {
+  id: string;
+  size?: number;
+}
+const { id, size = 20 } = Astro.props;
+const map: Record<string, { path: string } | undefined> = {
+  instagram: simple.siInstagram,
+  facebook: simple.siFacebook,
+  tiktok: simple.siTiktok,
+  youtube: simple.siYoutube,
+  'whatsapp-business': simple.siWhatsapp,
+};
+const icon = map[id];
+---
+
+{
+  icon ? (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true" focusable="false">
+      <path d={icon.path} />
+    </svg>
+  ) : (
+    <span aria-hidden="true" class="text-sm font-extrabold leading-none">in</span>
+  )
+}

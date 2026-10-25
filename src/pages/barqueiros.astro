@@ -1,0 +1,143 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Faq, { type FaqItem } from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { LINKS } from '../data/site';
+
+const benefits = [
+  {
+    icon: 'trending-up',
+    title: 'Mais vendas',
+    text: 'Sua embarcação aparece na vitrine pública para quem procura viagem, e as passagens são vendidas online, com pagamento por Pix ou cartão.',
+  },
+  {
+    icon: 'layout-dashboard',
+    title: 'Mais controle',
+    text: 'Lugares por tipo de acomodação, passagens vendidas e check-in por QR no mesmo painel, no lugar de caderno e mensagem.',
+  },
+  {
+    icon: 'wallet',
+    title: 'Recebimento claro',
+    text: 'Saldos pendente, disponível e bloqueado, extrato, viagens liquidadas e pedido de saque, tudo à vista.',
+  },
+];
+
+const features = [
+  { icon: 'ship', title: 'Embarcações', text: 'Cadastro com acomodações, preços, itens de segurança, seguro e galeria, com aprovação pela plataforma.' },
+  { icon: 'calendar-days', title: 'Viagens', text: 'Criação, publicação, cópia e calendário de viagens com paradas, e o ciclo completo: embarque, início, conclusão, atraso e cancelamento.' },
+  { icon: 'ticket', title: 'Passagens vendidas', text: 'Lista das reservas das suas viagens, com previsão de repasse, exportação e bilhetes.' },
+  { icon: 'scan-qr-code', title: 'Check-in por QR', text: 'Posto de check-in com leitura de QR Code, confirmação de embarque e registro de ausência.' },
+  { icon: 'users', title: 'Tripulação', text: 'Cadastro de tripulantes por embarcação, com função, telefone e certificação.' },
+  { icon: 'banknote', title: 'Financeiro e saques', text: 'Saldos, extrato, viagens liquidadas e pedido de saque do saldo disponível.' },
+  { icon: 'star', title: 'Avaliações', text: 'Nota média, NPS e distribuição das notas, com resposta pública ou contestação.' },
+  { icon: 'camera', title: 'Mídias', text: 'Fotos, vídeos e documentos enviados ao acervo digital, com imagem principal e ordem.' },
+  { icon: 'store', title: 'Vitrine pública', text: 'A embarcação aprovada aparece na página pública de embarcações para os passageiros.' },
+  { icon: 'handshake', title: 'Agências parceiras', text: 'Gestão das agências que vendem as passagens da sua embarcação, com aprovação e acompanhamento das vendas.' },
+];
+
+const steps = [
+  { title: 'Peça acesso no app', text: 'Em "Quero ser barqueiro", informe o CNPJ da empresa e escolha um sócio pessoa física, com o CPF dele.' },
+  { title: 'Confirme o contato', text: 'Aceite o Termo de Ciência do Barqueiro e valide e-mail e telefone com os códigos recebidos. A plataforma analisa o pedido.' },
+  { title: 'Cadastre a embarcação', text: 'Informe acomodações, preços, segurança e de 6 a 24 fotos e vídeos. Complete tripulação e documentos para a aprovação.' },
+  { title: 'Programe viagens e venda', text: 'Aprovada a embarcação, publique as viagens e acompanhe vendas, embarque e financeiro.' },
+];
+
+const faq: FaqItem[] = [
+  { q: 'Quanto custa participar?', a: 'As condições comerciais são conversadas diretamente com a nossa equipe. Agende uma demonstração ou fale conosco para conhecê-las.' },
+  { q: 'Preciso ter CNPJ?', a: 'Sim. O cadastro parte do CNPJ da empresa e exige um sócio pessoa física, com o CPF informado.' },
+  { q: 'Como recebo pelas passagens vendidas?', a: 'No financeiro você acompanha os saldos pendente, disponível e bloqueado, vê o extrato e pede o saque do saldo disponível.' },
+  { q: 'Minha equipe pode fazer o check-in sem ver o financeiro?', a: 'Sim. Existe um acesso próprio para a equipe de check-in, que enxerga só o check-in.' },
+  { q: 'Também posso transportar cargas?', a: 'Sim. Quem tem embarcação aprovada usa o mesmo cadastro para ativar o transporte de cargas. Veja a página para transportadores. O módulo de cargas está sendo liberado aos poucos.' },
+];
+---
+
+<Base
+  title="Para barqueiros: venda passagens da sua embarcação online"
+  description="Venda online, check-in por QR, controle das passagens, financeiro com saque e vitrine da embarcação. Veja como entrar na Via Fluvial e agende uma demonstração."
+  path="/barqueiros"
+>
+  <PageHero
+    eyebrow="Para barqueiros"
+    title="Sua embarcação vendendo passagens, do cadastro ao embarque"
+    lead="A Via Fluvial coloca a sua embarcação na vitrine de quem procura viagem e reúne vendas, embarque e financeiro em um só lugar."
+    photo="barcos-rio-negro"
+    photoPosition="50% 60%"
+  >
+    <a href={LINKS.barqueiroSignup()} class="btn btn-yellow btn-lg">Cadastrar minha embarcação</a>
+    <a href="/demonstracao" data-demo-open class="btn btn-outline-light btn-lg">Agendar demonstração</a>
+    <a href={LINKS.docsGuide.barqueiros} target="_blank" rel="noopener" class="btn btn-outline-light btn-lg">Ver o guia<span class="sr-only"> (abre em nova aba)</span></a>
+  </PageHero>
+
+  <section class="section" aria-labelledby="beneficios">
+    <div class="wrap">
+      <SectionHead eyebrow="Benefícios" id="beneficios" title="Mais vendas, mais controle e recebimento claro" />
+      <ul class="mt-10 grid gap-4 md:grid-cols-3">
+        {
+          benefits.map((item) => (
+            <li class="card reveal flex flex-col gap-3">
+              <span class="icon-badge"><Icon name={item.icon} size={26} /></span>
+              <h3 class="h3 text-green-900">{item.title}</h3>
+              <p class="leading-relaxed text-muted">{item.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="area">
+    <div class="wrap">
+      <SectionHead eyebrow="Área do Barqueiro" id="area" title="O que a sua área na plataforma oferece" lead="Depois de aprovado, o barqueiro ganha um painel com operação, vendas e financeiro." />
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          features.map((item) => (
+            <li class="card reveal flex gap-4">
+              <span class="icon-badge"><Icon name={item.icon} size={24} /></span>
+              <div>
+                <h3 class="font-extrabold text-green-900">{item.title}</h3>
+                <p class="mt-1 leading-relaxed text-muted">{item.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="passos">
+    <div class="wrap">
+      <SectionHead eyebrow="Como entrar" id="passos" title="Entre na plataforma em 4 passos" lead="Uma visão geral. O passo a passo com as telas está na Central de Ajuda." />
+      <ol class="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {
+          steps.map((step, index) => (
+            <li class="card reveal relative pt-9">
+              <span class="absolute -top-4 left-5 flex h-9 w-9 items-center justify-center rounded-full bg-yellow-400 text-lg font-extrabold text-green-900" aria-hidden="true">{index + 1}</span>
+              <h3 class="font-extrabold text-green-900"><span class="sr-only">Passo {index + 1}: </span>{step.title}</h3>
+              <p class="mt-2 leading-relaxed text-muted">{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="mt-6">
+        <a href={LINKS.docsGuide.cadastroBarqueiro} target="_blank" rel="noopener" class="inline-flex min-h-11 items-center font-bold text-green-700 hover:underline">
+          Ver o guia de cadastro na Central de Ajuda →<span class="sr-only"> (abre em nova aba)</span>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="perguntas">
+    <div class="wrap">
+      <SectionHead eyebrow="Perguntas comerciais" id="perguntas" title="Dúvidas de quem opera embarcação" />
+      <div class="mt-8 max-w-3xl"><Faq items={faq} /></div>
+    </div>
+  </section>
+
+  <CtaBand title="Pronto para vender passagens online?" text="Cadastre a sua embarcação no app ou agende uma demonstração e tire as dúvidas com a nossa equipe.">
+    <a href={LINKS.barqueiroSignup('barqueiros-faixa')} class="btn btn-green btn-lg">Cadastrar minha embarcação</a>
+    <a href="/demonstracao" data-demo-open class="btn btn-outline btn-lg !border-green-900 !text-green-900 hover:!bg-yellow-500">Agendar demonstração</a>
+  </CtaBand>
+</Base>

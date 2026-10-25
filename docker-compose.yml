@@ -1,36 +1,23 @@
 name: via-fluvial-lp
 
+# Execucao local da imagem de producao (nginx + site estatico + proxy dos formularios).
+#   docker compose up --build        ->  http://localhost:8081
 services:
   web:
     build:
       context: .
       dockerfile: Dockerfile
       target: runtime
+      args:
+        APP_BUILD_ID: local
+        APP_VERSION: dev
     image: via-fluvial-lp:local
     container_name: via-fluvial-lp-web
     ports:
       - "8081:80"
+    environment:
+      VIA_FLUVIAL_API_ADMINISTRACAO_BACKEND_URL: ${VIA_FLUVIAL_API_ADMINISTRACAO_BACKEND_URL:-https://api-administracao.api.plataforma.prd.viafluvial.com.br/api/v1}
+      VIA_FLUVIAL_API_NOTIFICACOES_BACKEND_URL: ${VIA_FLUVIAL_API_NOTIFICACOES_BACKEND_URL:-https://api-notificacoes.api.plataforma.prd.viafluvial.com.br/api/v1}
+      VIA_FLUVIAL_API_RESERVAS_BACKEND_URL: ${VIA_FLUVIAL_API_RESERVAS_BACKEND_URL:-https://api-reservas.api.plataforma.prd.viafluvial.com.br/api/v1}
+      PLATFORM_STATS_ENABLED: ${PLATFORM_STATS_ENABLED:-false}
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost/ || exit 1"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
-  web-dev:
-    image: node:20-alpine
-    container_name: via-fluvial-lp-web-dev
-    working_dir: /app
-    ports:
-      - "8081:8081"
-    command: sh -c "npm install --legacy-peer-deps && npm run dev -- --host 0.0.0.0 --port 8081"
-    volumes:
-      - ./:/app
-      - web-dev-node-modules:/app/node_modules
-    restart: unless-stopped
-    profiles:
-      - dev
-
-volumes:
-  web-dev-node-modules:

@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../data/site';
+---
+
+<Base
+  title="Termos de uso do site"
+  description="Termos de uso do site de apresentação da Via Fluvial (sobre.viafluvial.com.br): finalidade, conteúdo, links externos, propriedade intelectual e contato."
+  path="/termos"
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Legal</p>
+      <h1 class="h1 mt-2 !text-[clamp(1.9rem,4.5vw,3rem)]">Termos de uso do site</h1>
+      <p class="mt-3 text-muted">Atualizados em outubro de 2026.</p>
+
+      <div class="prose-vf mt-8">
+        <p>
+          Estes termos valem para o site de apresentação da Via Fluvial, em sobre.viafluvial.com.br. Ao navegar por ele, você concorda com as regras abaixo. A compra de passagens, o envio de cargas e o uso das áreas de barqueiro, transportador e agência acontecem na plataforma (viafluvial.com.br e viafluvial.com.br/cargas), que tem termos próprios.
+        </p>
+
+        <h2>Para que serve este site</h2>
+        <p>
+          O site apresenta a Via Fluvial, seus serviços, parceiros e novidades. Ele não vende passagens nem fretes e não substitui os apps. As informações têm caráter informativo.
+        </p>
+
+        <h2>Conteúdo e mudanças</h2>
+        <p>
+          Cuidamos para que as informações sejam corretas, mas elas podem mudar sem aviso. O roteiro "O que vem por aí" mostra intenções, não compromissos de prazo ou de entrega. Os números oficiais da seção "A Amazônia e os rios em números" vêm das fontes indicadas junto de cada valor.
+        </p>
+
+        <h2>Formulários</h2>
+        <p>
+          Ao enviar um formulário, você informa que os dados são verdadeiros e que pode fornecê-los. O tratamento dos dados segue a <a href="/privacidade">Política de Privacidade</a>. Envios automáticos ou abusivos podem ser bloqueados.
+        </p>
+
+        <h2>Propriedade intelectual</h2>
+        <p>
+          O nome Via Fluvial, o logotipo, os textos e as telas do produto pertencem à {SITE.company}. As fotos são de terceiros, usadas sob licenças livres, com autor e licença indicados na página de <a href="/creditos">créditos</a>. Não é permitido usar a marca Via Fluvial de forma que sugira vínculo ou aprovação sem autorização por escrito.
+        </p>
+
+        <h2>Links para outros sites</h2>
+        <p>
+          O site tem links para a plataforma, o app de cargas, a Central de Ajuda e outros endereços. Não controlamos sites de terceiros e não respondemos pelo conteúdo deles.
+        </p>
+
+        <h2>Responsabilidade</h2>
+        <p>
+          Usamos o site "como está". Na medida permitida pela lei, a Via Fluvial não responde por danos decorrentes de indisponibilidade do site ou do uso das informações aqui publicadas.
+        </p>
+
+        <h2>Lei aplicável e contato</h2>
+        <p>
+          Estes termos seguem a lei brasileira. Dúvidas ou pedidos: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>

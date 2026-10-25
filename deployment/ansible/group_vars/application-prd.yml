@@ -28,3 +28,9 @@ stack_replicas: 2
 # Imagem da aplicacao
 # Sobrescreva com -e app_image=<image:tag> no deploy
 app_image: docker.io/viafluvial/via-fluvial-lp:latest
+
+# Backends da plataforma usados pelo proxy do nginx do site (formularios e numeros publicos).
+api_administracao_backend_url: https://api-administracao.api.plataforma.prd.viafluvial.com.br/api/v1
+api_notificacoes_backend_url: https://api-notificacoes.api.plataforma.prd.viafluvial.com.br/api/v1
+api_reservas_backend_url: https://api-reservas.api.plataforma.prd.viafluvial.com.br/api/v1
+platform_stats_enabled: "false"

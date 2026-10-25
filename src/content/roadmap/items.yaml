@@ -1,0 +1,56 @@
+# "O que vem por aí": itens curtos, sem datas. Quem decide o produto revisa a coluna de cada item todo mês;
+# quando um item é lançado, ele sai daqui e vira notícia. Texto aprovado em .project/conteudo-inicial.md.
+- id: cargas-mais-rotas
+  title: Cargas e encomendas em mais rotas
+  description: O envio de cargas e encomendas está sendo liberado aos poucos, rota por rota.
+  column: agora
+  audience: cargas
+  order: 1
+- id: mais-embarcacoes
+  title: Mais embarcações na plataforma
+  description: Novas embarcações e barqueiros estão entrando a cada semana.
+  column: agora
+  audience: barqueiros
+  order: 2
+- id: avisos-whatsapp-sms
+  title: Avisos por WhatsApp e SMS
+  description: Avisos importantes da viagem e da encomenda também pelo WhatsApp e por SMS.
+  column: em-seguida
+  audience: passageiros
+  order: 1
+- id: descontos-por-idade
+  title: Descontos por idade
+  description: Descontos para crianças e idosos direto na compra da passagem.
+  column: em-seguida
+  audience: passageiros
+  order: 2
+- id: simulacao-cancelamento
+  title: Simulação do cancelamento
+  description: Antes de cancelar, ver quanto volta e como o valor é devolvido.
+  column: em-seguida
+  audience: passageiros
+  order: 3
+- id: relatorios-barqueiros
+  title: Relatórios para barqueiros
+  description: Relatórios de vendas, financeiro e desempenho na Área do Barqueiro.
+  column: em-seguida
+  audience: barqueiros
+  order: 4
+- id: novas-regioes
+  title: Novas regiões
+  description: Chegar a mais rios e estados da Amazônia.
+  column: mais-adiante
+  audience: todos
+  order: 1
+- id: ingles-espanhol
+  title: Inglês e espanhol
+  description: A plataforma também em inglês e espanhol, para turistas e parceiros.
+  column: mais-adiante
+  audience: todos
+  order: 2
+- id: integracoes-empresas
+  title: Mais integrações para empresas
+  description: Mais formas de empresas e agências se integrarem à plataforma.
+  column: mais-adiante
+  audience: empresas
+  order: 3

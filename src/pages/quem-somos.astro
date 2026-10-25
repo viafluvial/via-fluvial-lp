@@ -1,0 +1,163 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import NumbersGrid from '../components/NumbersGrid.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { MISSION, VALUES, VISION } from '../data/institutional';
+
+const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order - b.data.order);
+const numbers = (await getCollection('numbers')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base
+  title="Quem somos"
+  description="Conheça a Via Fluvial: nosso manifesto, missão, visão e valores, nossa história desde a viagem a Parintins e a Amazônia e os rios em números, com as fontes."
+  path="/quem-somos"
+>
+  <PageHero
+    eyebrow="Institucional"
+    title="Quem somos"
+    lead="A Via Fluvial leva o transporte fluvial da Amazônia para a palma da mão: passagens, cargas e encomendas pelos rios, para quem viaja, quem envia e quem trabalha no rio."
+    photo="encontro-das-aguas-aereo"
+    photoPosition="50% 45%"
+  />
+
+  <!-- Manifesto -->
+  <section class="section" aria-labelledby="manifesto">
+    <div class="wrap grid items-start gap-10 lg:grid-cols-[1fr_1.4fr]">
+      <div>
+        <p class="eyebrow">Manifesto</p>
+        <h2 id="manifesto" class="h2 mt-2">O rio é a estrada da Amazônia</h2>
+      </div>
+      <div class="prose-vf !max-w-none">
+        <p>Por ele chegam as famílias, os estudantes, os trabalhadores, os turistas e as encomendas.</p>
+        <p>
+          Acreditamos que viajar e enviar pelo rio pode ser <strong>simples, seguro e justo</strong> - e que a tecnologia só vale a pena quando resolve um problema real.
+        </p>
+        <p>Por isso a Via Fluvial leva o balcão do porto para o celular, sem tirar do centro o rio, a cultura e as pessoas.</p>
+        <p>
+          Para quem viaja, a certeza do lugar. Para quem envia, a certeza de que a carga seguiu viagem. Para quem trabalha no rio, uma forma de vender e operar com mais controle.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Missão, visão e valores -->
+  <section class="section on-green bg-green-900 text-white" aria-labelledby="mvv">
+    <div class="wrap">
+      <p class="eyebrow">Propósito</p>
+      <h2 id="mvv" class="h2 mt-2">Missão, visão e valores</h2>
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <div class="rounded-2xl bg-white/10 p-6">
+          <h3 class="text-lg font-extrabold text-yellow-400">Missão</h3>
+          <p class="mt-2 text-lg leading-relaxed">{MISSION}</p>
+        </div>
+        <div class="rounded-2xl bg-white/10 p-6">
+          <h3 class="text-lg font-extrabold text-yellow-400">Visão</h3>
+          <p class="mt-2 text-lg leading-relaxed">{VISION}</p>
+        </div>
+      </div>
+      <h3 class="mt-10 text-lg font-extrabold text-yellow-400">Valores</h3>
+      <ul class="mt-4 grid gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          VALUES.map((value) => (
+            <li class="flex gap-4">
+              <span class="icon-badge"><Icon name={value.icon} size={24} /></span>
+              <div>
+                <h4 class="font-extrabold">{value.title}</h4>
+                <p class="mt-0.5 text-[0.9375rem] leading-snug text-green-100">{value.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Nossa história -->
+  <section id="historia" class="section scroll-mt-20" aria-labelledby="historia-titulo">
+    <div class="wrap grid items-start gap-10 lg:grid-cols-[1.5fr_1fr]">
+      <div>
+        <p class="eyebrow">Nossa história</p>
+        <h2 id="historia-titulo" class="h2 mt-2">Tudo começou com uma viagem a Parintins</h2>
+        <div class="prose-vf mt-6">
+          <p>
+            Quem já viajou de barco pela Amazônia conhece o ritual: ir até o porto, perguntar pelo próximo barco, garantir o lugar no balcão e torcer para que dê tudo certo. Foi numa dessas viagens, a caminho de Parintins, em 2025, que surgiu uma pergunta simples:
+            <strong>por que comprar uma passagem de barco ainda é tão diferente de comprar qualquer outra coisa hoje em dia?</strong>
+          </p>
+          <p>
+            O rio é a estrada de grande parte da população da Amazônia. Por ele passam famílias, estudantes, trabalhadores, turistas, encomendas e o abastecimento de cidades inteiras. Mas a informação sobre horários, lugares e preços continuava presa ao porto, ao papel e ao boca a boca.
+          </p>
+          <p>
+            A resposta veio de quem já conhecia o caminho entre o problema e a solução digital. Desde 2012, a <strong>IntSoft Consultoria em TI</strong> desenvolve soluções digitais para a área fiscal do Amazonas, ajudando a transformar processos complexos em serviços simples. Essa experiência foi colocada a serviço de um novo desafio: levar o transporte fluvial para a palma da mão.
+          </p>
+          <p>
+            Assim nasceu a <strong>Via Fluvial</strong>: uma plataforma para encontrar a viagem, pagar com segurança e embarcar com o bilhete no celular. Depois vieram as cargas e encomendas, porque no rio não viajam só pessoas: viajam também as histórias, os negócios e as saudades de quem está longe.
+          </p>
+          <p>
+            Hoje, a Via Fluvial conecta passageiros, barqueiros, transportadores e portos, com um objetivo que continua o mesmo daquela primeira viagem: <strong>fazer do rio um caminho cada vez mais simples, seguro e acessível para todos.</strong>
+          </p>
+        </div>
+      </div>
+      <div class="space-y-8">
+        <Photo id="redes-barco" class="aspect-[4/3] rounded-3xl shadow-lg" sizes="(min-width: 1024px) 420px, 92vw" widths={[480, 768, 1100]} credit="caption" />
+        <div>
+          <h3 class="h3 text-green-900">Linha do tempo</h3>
+          <ol class="mt-4 space-y-5 border-l-2 border-green-200 pl-6" data-testid="timeline">
+            {
+              timeline.map((item) => (
+                <li class="relative">
+                  <span class="absolute -left-[1.95rem] top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-yellow-400 ring-2 ring-green-700" aria-hidden="true"></span>
+                  <p class="text-sm font-extrabold text-green-700">{item.data.when}</p>
+                  <p class="font-bold text-green-900">{item.data.title}</p>
+                  <p class="text-[0.9375rem] text-muted">{item.data.description}</p>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- A Amazônia e os rios em números -->
+  <section id="numeros" class="section scroll-mt-20 bg-surface" aria-labelledby="numeros-titulo">
+    <div class="wrap">
+      <SectionHead
+        eyebrow="O tamanho do desafio"
+        id="numeros-titulo"
+        title="A Amazônia e os rios em números"
+        lead="Números oficiais, cada um com o ano e a fonte. Revisamos os valores uma vez por ano."
+      />
+      <div class="mt-10"><NumbersGrid columns={3} /></div>
+
+      <div class="mt-10 rounded-2xl border border-line bg-white p-6">
+        <h3 class="font-extrabold text-green-900">Fontes e como ler os números</h3>
+        <ul class="mt-3 space-y-3 text-[0.9375rem] leading-relaxed text-muted">
+          {
+            numbers.map((item) => (
+              <li>
+                <strong class="text-green-900">{item.data.label}</strong> ({item.data.scope}, {item.data.year}):{' '}
+                <a href={item.data.sourceUrl} target="_blank" rel="noopener" class="font-semibold text-green-700 underline underline-offset-2">
+                  {item.data.sourceName}<span class="sr-only"> (abre em nova aba)</span>
+                </a>
+                .
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-4 text-sm text-muted">
+          "Vias navegadas" são os rios onde a ANTAQ registrou transporte comercial no ano; não é o total de rios navegáveis. Os dados do IBGE vêm do serviço oficial de dados do instituto (SIDRA, tabela 4714).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Quer conversar com a gente?" text="Para parcerias, imprensa, investidores ou poder público, fale conosco.">
+    <a href="/contato" class="btn btn-green btn-lg">Fale conosco</a>
+  </CtaBand>
+</Base>

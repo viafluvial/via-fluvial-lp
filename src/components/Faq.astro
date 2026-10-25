@@ -1,0 +1,27 @@
+---
+/** Perguntas e respostas em <details> (sem JavaScript). A página monta o JSON-LD FAQPage com os mesmos itens. */
+import Icon from './Icon.astro';
+
+export interface FaqItem {
+  q: string;
+  a: string;
+}
+interface Props {
+  items: FaqItem[];
+}
+const { items } = Astro.props;
+---
+
+<div class="divide-y divide-line rounded-2xl border border-line bg-white">
+  {
+    items.map((item) => (
+      <details class="group px-5 py-1 md:px-6">
+        <summary class="flex min-h-14 cursor-pointer items-center justify-between gap-4 py-3 text-left text-[1.0625rem] font-bold text-green-900">
+          <span>{item.q}</span>
+          <Icon name="chevron-down" size={20} class="flex-none text-green-700 transition-transform group-open:rotate-180" />
+        </summary>
+        <p class="pb-4 pr-8 leading-relaxed text-muted">{item.a}</p>
+      </details>
+    ))
+  }
+</div>

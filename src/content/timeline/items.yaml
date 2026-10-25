@@ -1,0 +1,17 @@
+# Linha do tempo de "Quem somos". Itens sem data confirmada (chegada das cargas e lançamento oficial) entram na
+# publicação, junto com a notícia correspondente. Texto aprovado em .project/conteudo-inicial.md.
+- id: intsoft-2012
+  when: '2012'
+  title: Fundação da IntSoft Consultoria em TI
+  description: Nasce a IntSoft, com soluções digitais para a área fiscal do Amazonas.
+  order: 1
+- id: viagem-parintins-2025
+  when: '2025'
+  title: A viagem a Parintins
+  description: Numa viagem a Parintins surge a ideia da Via Fluvial.
+  order: 2
+- id: desenvolvimento-2025
+  when: '2025'
+  title: Início do desenvolvimento da plataforma
+  description: 'A ideia vira projeto, e começa o desenvolvimento da plataforma.'
+  order: 3

@@ -3,6 +3,11 @@ version: "3.9"
 services:
   sobre-lp:
     image: "{{ app_image }}"
+    environment:
+      VIA_FLUVIAL_API_ADMINISTRACAO_BACKEND_URL: "{{ api_administracao_backend_url }}"
+      VIA_FLUVIAL_API_NOTIFICACOES_BACKEND_URL: "{{ api_notificacoes_backend_url }}"
+      VIA_FLUVIAL_API_RESERVAS_BACKEND_URL: "{{ api_reservas_backend_url }}"
+      PLATFORM_STATS_ENABLED: "{{ platform_stats_enabled | default('false') }}"
     networks:
       - {{ traefik_network }}
     deploy:

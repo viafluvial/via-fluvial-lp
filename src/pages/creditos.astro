@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+
+const credits = (await getCollection('credits')).sort((a, b) => a.id.localeCompare(b.id));
+---
+
+<Base
+  title="Créditos das imagens"
+  description="Autores, licenças e origem das fotos usadas no site da Via Fluvial. Todas as fotos têm licença livre (Creative Commons) e foram otimizadas para o site."
+  path="/creditos"
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Créditos</p>
+      <h1 class="h1 mt-2 !text-[clamp(1.9rem,4.5vw,3rem)]">Créditos das imagens</h1>
+      <p class="lead mt-4 max-w-2xl">
+        As fotos deste site são de autores que as publicaram com licença livre no Wikimedia Commons. Agradecemos a cada um. As imagens foram redimensionadas e otimizadas, sem outras alterações.
+      </p>
+
+      <ul class="mt-10 grid gap-6 md:grid-cols-2" data-testid="credits-list">
+        {
+          credits.map((item) => (
+            <li id={item.id} class="scroll-mt-24 overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
+              <Photo id={item.id} class="aspect-[16/9]" sizes="(min-width: 768px) 520px, 92vw" widths={[360, 640, 900]} />
+              <div class="p-5">
+                <h2 class="font-extrabold text-green-900">{item.data.title}</h2>
+                <dl class="mt-3 space-y-1 text-[0.9375rem]">
+                  <div class="flex gap-2"><dt class="font-bold">Autor:</dt><dd>{item.data.author}</dd></div>
+                  <div class="flex gap-2">
+                    <dt class="font-bold">Licença:</dt>
+                    <dd><a href={item.data.licenseUrl} target="_blank" rel="noopener" class="font-semibold text-green-700 underline underline-offset-2">{item.data.license}<span class="sr-only"> (abre em nova aba)</span></a></dd>
+                  </div>
+                  <div class="flex gap-2">
+                    <dt class="font-bold">Origem:</dt>
+                    <dd><a href={item.data.sourceUrl} target="_blank" rel="noopener" class="font-semibold text-green-700 underline underline-offset-2">Wikimedia Commons<span class="sr-only"> (abre em nova aba)</span></a></dd>
+                  </div>
+                </dl>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="prose-vf mt-12">
+        <h2>Outros materiais</h2>
+        <ul>
+          <li>Telas do produto: capturas da própria plataforma Via Fluvial.</li>
+          <li>Ícones: <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a> (licença ISC) e, nas redes sociais, <a href="https://simpleicons.org" target="_blank" rel="noopener">Simple Icons</a> (CC0).</li>
+          <li>Logotipo e identidade visual: Via Fluvial.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>

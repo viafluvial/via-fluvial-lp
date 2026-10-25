@@ -1,0 +1,35 @@
+---
+/** Tela real do produto dentro de uma moldura de celular. */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  sizes?: string;
+  eager?: boolean;
+  class?: string;
+}
+const { src, alt, sizes = '(min-width: 768px) 300px, 70vw', eager = false, class: className = '' } = Astro.props;
+---
+
+<div class:list={['mx-auto w-full max-w-[17.5rem]', className]}>
+  <div class="rounded-[2.4rem] bg-[#10231b] p-2.5 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.55)] ring-1 ring-white/10">
+    <div class="relative overflow-hidden rounded-[1.9rem] bg-white">
+      <div class="absolute left-1/2 top-2 z-10 h-1.5 w-16 -translate-x-1/2 rounded-full bg-black/60" aria-hidden="true"></div>
+      <Picture
+        src={src}
+        formats={['avif', 'webp']}
+    fallbackFormat="webp"
+        widths={[280, 420, 560]}
+        sizes={sizes}
+        alt={alt}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : 'auto'}
+        decoding={eager ? 'sync' : 'async'}
+        class="block h-auto w-full"
+        pictureAttributes={{ class: 'block' }}
+      />
+    </div>
+  </div>
+</div>

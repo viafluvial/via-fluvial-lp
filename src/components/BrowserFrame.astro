@@ -1,0 +1,37 @@
+---
+/** Tela real do produto dentro de uma janela de navegador. */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  address: string;
+  sizes?: string;
+  class?: string;
+}
+const { src, alt, address, sizes = '(min-width: 1024px) 560px, 92vw', class: className = '' } = Astro.props;
+---
+
+<div class:list={['overflow-hidden rounded-xl bg-white shadow-[0_24px_50px_-18px_rgb(14_59_42/0.45)] ring-1 ring-black/10', className]}>
+  <div class="flex items-center gap-3 bg-[#e8efe9] px-3 py-2" aria-hidden="true">
+    <span class="flex gap-1.5">
+      <span class="h-2.5 w-2.5 rounded-full bg-[#d4695f]"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-[#e5b94a]"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-[#5fae7b]"></span>
+    </span>
+    <span class="min-w-0 flex-1 truncate rounded-md bg-white px-3 py-1 text-xs text-muted">{address}</span>
+  </div>
+  <Picture
+    src={src}
+    formats={['avif', 'webp']}
+    fallbackFormat="webp"
+    widths={[480, 768, 1100]}
+    sizes={sizes}
+    alt={alt}
+    loading="lazy"
+    decoding="async"
+    class="block h-auto w-full"
+    pictureAttributes={{ class: 'block' }}
+  />
+</div>

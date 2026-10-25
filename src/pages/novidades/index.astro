@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import NewsletterBand from '../../components/NewsletterBand.astro';
+import { NEWS_TYPES } from '../../lib/format';
+
+const news = (await getCollection('news')).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const presentTypes = Object.entries(NEWS_TYPES).filter(([key]) => news.some((entry) => entry.data.type === key));
+---
+
+<Base
+  title="Novidades"
+  description="Notícias da plataforma Via Fluvial: lançamentos, novas rotas, novas funções e novidades institucionais."
+  path="/novidades"
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Novidades</p>
+      <h1 class="h1 mt-2 !text-[clamp(1.9rem,4.5vw,3rem)]">Notícias da plataforma</h1>
+      <p class="lead mt-4 max-w-2xl">Lançamentos, novas rotas, novas funções e novidades da Via Fluvial. Quer saber o que está por vir? Veja <a href="/o-que-vem-por-ai" class="font-bold text-green-700 underline underline-offset-2">o que vem por aí</a>.</p>
+
+      <div class="mt-8 hidden flex-col gap-4 md:flex-row md:items-end" data-news-filters>
+        <div role="group" aria-label="Filtrar por tipo" class="flex flex-wrap gap-2">
+          <button type="button" data-filter="all" aria-pressed="true" class="chip">Todas</button>
+          {presentTypes.map(([key, label]) => <button type="button" data-filter={key} aria-pressed="false" class="chip">{label}</button>)}
+        </div>
+        <div class="md:ml-auto md:w-72">
+          <label for="busca-noticias" class="sr-only">Buscar nas notícias</label>
+          <input id="busca-noticias" type="search" class="input" placeholder="Buscar nas notícias" autocomplete="off" />
+        </div>
+      </div>
+      <p class="sr-only" role="status" aria-live="polite" data-news-status></p>
+
+      <ul class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-news-list>
+        {news.map((entry) => <li data-news-item data-type={entry.data.type} data-text={`${entry.data.title} ${entry.data.summary}`.toLowerCase()}><NewsCard entry={entry} /></li>)}
+      </ul>
+      <p class="mt-8 hidden rounded-xl bg-green-50 p-5 text-green-900" data-news-empty>Nenhuma notícia encontrada para esse filtro.</p>
+    </div>
+  </section>
+
+  <NewsletterBand />
+</Base>
+
+<style is:global>
+  .chip {
+    min-height: 2.75rem;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    border: 2px solid var(--vf-green-700);
+    color: var(--vf-green-700);
+    font-weight: 700;
+    background: #fff;
+    cursor: pointer;
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--vf-green-700);
+    color: #fff;
+  }
+  .js [data-news-filters] {
+    display: flex;
+  }
+</style>
+
+<script>
+  const filters = document.querySelector<HTMLElement>('[data-news-filters]');
+  if (filters) {
+    const items = Array.from(document.querySelectorAll<HTMLElement>('[data-news-item]'));
+    const buttons = Array.from(filters.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const search = filters.querySelector<HTMLInputElement>('input[type="search"]')!;
+    const empty = document.querySelector<HTMLElement>('[data-news-empty]')!;
+    const status = document.querySelector<HTMLElement>('[data-news-status]')!;
+    let type = 'all';
+
+    const apply = () => {
+      const term = search.value.trim().toLowerCase();
+      let shown = 0;
+      for (const item of items) {
+        const match = (type === 'all' || item.dataset.type === type) && (!term || (item.dataset.text ?? '').includes(term));
+        item.hidden = !match;
+        if (match) shown += 1;
+      }
+      empty.classList.toggle('hidden', shown > 0);
+      status.textContent = shown === 1 ? '1 notícia encontrada.' : `${shown} notícias encontradas.`;
+    };
+
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        type = button.dataset.filter ?? 'all';
+        for (const other of buttons) other.setAttribute('aria-pressed', String(other === button));
+        apply();
+      });
+    }
+    search.addEventListener('input', apply);
+  }
+</script>

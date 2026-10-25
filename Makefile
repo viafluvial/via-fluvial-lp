@@ -16,25 +16,28 @@ APP_IMAGE := docker.io/$(DOCKERHUB_USERNAME)/$(PROJECT_NAME):latest
 endif
 APPLICATION_CLUSTER_IP ?= 8.232.27.179
 
-.PHONY: help install dev build preview clean docker-build docker-run docker-stop docker-logs compose-prod compose-dev compose-down compose-up compose-dev-up compose-dev-down ci ansible-ping ansible-deploy tf-dns-init tf-dns-plan tf-dns-apply resolve-application-ip deploy-prd
+.PHONY: help install dev build preview test clean docker-build docker-run docker-stop docker-logs compose-prod compose-dev compose-down compose-up compose-dev-up compose-dev-down ci ansible-ping ansible-deploy tf-dns-init tf-dns-plan tf-dns-apply resolve-application-ip deploy-prd
 
 help: ## Lista os comandos disponiveis
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-20s %s\n", $$1, $$2}'
 
-install: ## Instala dependencias do projeto
-	npm install --legacy-peer-deps
+install: ## Instala dependencias do projeto (Node 22+)
+	npm ci
 
-dev: ## Roda o Vite localmente na porta $(PORT)
-	npm run dev -- --host 0.0.0.0 --port $(PORT)
+dev: ## Roda o Astro localmente na porta $(PORT)
+	npm run dev -- --port $(PORT)
 
 build: ## Gera build de producao
 	npm run build
 
 preview: ## Faz preview da build na porta $(PORT)
-	npm run build && npx vite preview --host 0.0.0.0 --port $(PORT)
+	npm run build && npm run preview -- --port $(PORT)
+
+test: ## Roda os testes de fumaca (Playwright) e o verificador de links
+	npm run build && npm test && npm run test:links
 
 clean: ## Remove artefatos de build
-	rm -rf dist
+	rm -rf dist .astro test-results playwright-report lighthouse-reports
 
 docker-build: ## Builda a imagem Docker de producao
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
@@ -55,11 +58,11 @@ compose-prod: ## Sobe stack de producao no Docker Compose (porta 8081)
 compose-down: ## Derruba stack de producao no Docker Compose
 	docker compose down
 
-compose-dev: ## Sobe stack de desenvolvimento no Docker Compose (porta 8081)
-	docker compose --profile dev up --build -d web-dev
+compose-dev: ## Alias de dev (Astro local, sem Docker)
+	@$(MAKE) dev
 
-compose-dev-down: ## Derruba stack de desenvolvimento no Docker Compose
-	docker compose --profile dev down
+compose-dev-down: ## (sem uso: o desenvolvimento nao usa Docker)
+	@echo "Nada a derrubar: use 'make dev' para desenvolver."
 
 compose-up: ## Alias legado para compose-prod
 	@$(MAKE) compose-prod
@@ -67,9 +70,12 @@ compose-up: ## Alias legado para compose-prod
 compose-dev-up: ## Alias legado para compose-dev
 	@$(MAKE) compose-dev
 
-ci: ## Executa pipeline local basica (install + build)
-	npm install --legacy-peer-deps
+ci: ## Executa pipeline local (npm ci, astro check, build, testes e links)
+	npm ci
+	npm run check
 	npm run build
+	npm test
+	npm run test:links
 
 resolve-application-ip: ## Resolve o IP do cluster application via DNS
 	./deployment/scripts/resolve-application-ip.sh

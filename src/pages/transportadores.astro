@@ -1,0 +1,145 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import BrowserFrame from '../components/BrowserFrame.astro';
+import Faq, { type FaqItem } from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { screens } from '../data/images';
+import { LINKS } from '../data/site';
+
+const benefits = [
+  { icon: 'calculator', title: 'Preço do seu jeito', text: 'Defina o modelo de preço, os valores padrão, o frete mínimo, adicionais e exceções por rota, com histórico de versões.' },
+  { icon: 'boxes', title: 'Espaço sob controle', text: 'Publique a capacidade de cada saída, pause as vendas, encerre o recebimento e acompanhe o que já foi vendido.' },
+  { icon: 'file-check', title: 'Conferência e documentos em dia', text: 'Manifesto, documentos fiscais e repasses organizados em um só painel, sem caderno e sem planilha solta.' },
+];
+
+const activation = [
+  { title: 'Segmento', text: 'Misto (passageiros e cargas) ou carga exclusiva.' },
+  { title: 'Embarcações', text: 'Marque as embarcações aprovadas que vão levar carga.' },
+  { title: 'Categorias', text: 'Escolha as categorias de carga que você transporta.' },
+  { title: 'Documentos', text: 'Envie os documentos obrigatórios em PDF.' },
+  { title: 'Termos', text: 'Leia e aceite os termos. Dá para salvar e continuar depois.' },
+];
+
+const features = [
+  { icon: 'route', title: 'Tarifas, rotas e políticas', text: 'Por categoria, marque o que aceita, o que fica sob análise e o que não transporta, com exceções por embarcação, rota ou operação.' },
+  { icon: 'ship', title: 'Frota e comboios', text: 'Capacidade de cada embarcação (peso, volume, convés, vagas e recursos) e composições de comboio, liberadas por fase.' },
+  { icon: 'users', title: 'Equipe', text: 'Convites por e-mail ou celular, com portos, permissões por perfil e aparelhos conectados.' },
+  { icon: 'container', title: 'Operações de carga', text: 'Operações em viagem existente ou exclusivas, com capacidade, publicação, pausa de vendas, edição e cancelamento com realocação.' },
+  { icon: 'package-search', title: 'Cargas especiais', text: 'Cotações especiais com prazo de resposta, proposta com validade, mensagens com o cliente e pedidos de fretamento.' },
+  { icon: 'clipboard-check', title: 'Manifesto', text: 'Manifesto com versões e download obrigatório antes da saída, com decisão de dispensa pelo gestor.' },
+  { icon: 'receipt-text', title: 'Remessas e documentos fiscais', text: 'Mesa de remessas com ações em lote, conferência e documentos fiscais com envio ao contratante.' },
+  { icon: 'hand-coins', title: 'Ocorrências e repasses', text: 'Resposta a ocorrências, recebíveis e repasses dos fretes, e respostas públicas às avaliações.' },
+];
+
+const faq: FaqItem[] = [
+  { q: 'Preciso ser barqueiro para transportar cargas?', a: 'Você usa o mesmo cadastro de barqueiro, inclusive se for transportar só carga (segmento "carga exclusiva").' },
+  { q: 'Quanto custa participar?', a: 'As condições comerciais são conversadas diretamente com a nossa equipe. Agende uma demonstração ou fale conosco para conhecê-las.' },
+  { q: 'Quanto tempo leva a habilitação?', a: 'Depois do envio da ativação, a Via Fluvial analisa em até 2 dias úteis. A tela de habilitação mostra a situação e o que falta.' },
+  { q: 'Eu escolho o que transporto?', a: 'Sim. A política de carga define o que você aceita, o que fica sob análise e o que não transporta. Categorias perigosas ficam travadas enquanto o módulo está em beta.' },
+  { q: 'Como a equipe do porto trabalha?', a: 'Os agentes de porto usam o app de operação, inclusive sem internet, e os dados sincronizam depois.' },
+  { q: 'O módulo de cargas já está liberado?', a: 'O módulo de cargas está em beta e é liberado aos poucos, rota por rota.' },
+];
+---
+
+<Base
+  title="Para transportadores: venda frete pelo app de cargas"
+  description="Tarifas próprias, operações de carga, propostas para cargas especiais e manifesto. Veja como ativar o transporte de cargas na Via Fluvial e agende uma demonstração."
+  path="/transportadores"
+>
+  <PageHero
+    eyebrow="Para transportadores"
+    title="Seu barco também pode levar carga - e vender frete pelo app"
+    lead="Ative o módulo de cargas, defina o que transporta e quanto cobra, publique operações e acompanhe remessas, documentos e repasses."
+    photo="porto-manaus-carga"
+    photoPosition="50% 55%"
+  >
+    <a href={LINKS.transportadorActivation()} class="btn btn-yellow btn-lg">Ativar transporte de cargas</a>
+    <a href="/demonstracao" data-demo-open class="btn btn-outline-light btn-lg">Agendar demonstração</a>
+    <a href={LINKS.docsGuide.transportadoras} target="_blank" rel="noopener" class="btn btn-outline-light btn-lg">Ver o guia<span class="sr-only"> (abre em nova aba)</span></a>
+  </PageHero>
+
+  <section class="section" aria-labelledby="beneficios">
+    <div class="wrap">
+      <SectionHead eyebrow="Benefícios" id="beneficios" title="Venda frete com menos improviso" lead="O módulo de cargas está em beta e está sendo liberado aos poucos, rota por rota." />
+      <ul class="mt-10 grid gap-4 md:grid-cols-3">
+        {
+          benefits.map((item) => (
+            <li class="card reveal flex flex-col gap-3">
+              <span class="icon-badge"><Icon name={item.icon} size={26} /></span>
+              <h3 class="h3 text-green-900">{item.title}</h3>
+              <p class="leading-relaxed text-muted">{item.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="ativacao">
+    <div class="wrap">
+      <SectionHead eyebrow="Ativação" id="ativacao" title="Ative o transporte de cargas em 5 etapas" lead="Depois do envio, a Via Fluvial analisa em até 2 dias úteis e você acompanha a situação na tela de habilitação." />
+      <ol class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {
+          activation.map((step, index) => (
+            <li class="card reveal relative pt-9">
+              <span class="absolute -top-4 left-5 flex h-9 w-9 items-center justify-center rounded-full bg-yellow-400 text-lg font-extrabold text-green-900" aria-hidden="true">{index + 1}</span>
+              <h3 class="font-extrabold text-green-900"><span class="sr-only">Etapa {index + 1}: </span>{step.title}</h3>
+              <p class="mt-2 leading-relaxed text-muted">{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="mt-6">
+        <a href={LINKS.docsGuide.ativarCargas} target="_blank" rel="noopener" class="inline-flex min-h-11 items-center font-bold text-green-700 hover:underline">
+          Ver o guia de ativação na Central de Ajuda →<span class="sr-only"> (abre em nova aba)</span>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="area">
+    <div class="wrap">
+      <SectionHead eyebrow="Painel de cargas" id="area" title="O que o transportador tem na mão" />
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          features.map((item) => (
+            <li class="card reveal flex flex-col gap-3">
+              <span class="icon-badge"><Icon name={item.icon} size={24} /></span>
+              <h3 class="font-extrabold text-green-900">{item.title}</h3>
+              <p class="text-[0.9375rem] leading-relaxed text-muted">{item.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section bg-surface" aria-labelledby="cliente">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-2">
+      <div>
+        <p class="eyebrow">Do outro lado</p>
+        <h2 id="cliente" class="h2 mt-2">Seus clientes cotam e pagam pelo app</h2>
+        <p class="lead mt-4">
+          Quem envia informa o que vai mandar, o peso e as medidas e vê o preço na hora. Cargas fora do padrão seguem para cotação especial, e quem precisa de uma embarcação inteira pede um fretamento.
+        </p>
+        <p class="mt-6"><a href={LINKS.cargas('transportadores-cliente')} class="btn btn-green">Conhecer o app de cargas</a></p>
+      </div>
+      <BrowserFrame src={screens.cargasDesktop} alt="Tela de cotação rápida do app de cargas da Via Fluvial" address="viafluvial.com.br/cargas" />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="perguntas">
+    <div class="wrap">
+      <SectionHead eyebrow="Perguntas comerciais" id="perguntas" title="Dúvidas de quem transporta cargas" />
+      <div class="mt-8 max-w-3xl"><Faq items={faq} /></div>
+    </div>
+  </section>
+
+  <CtaBand title="Vamos colocar o seu frete no app?" text="Ative o transporte de cargas ou agende uma demonstração para ver o painel funcionando.">
+    <a href={LINKS.transportadorActivation('transportadores-faixa')} class="btn btn-green btn-lg">Ativar transporte de cargas</a>
+    <a href="/demonstracao" data-demo-open class="btn btn-outline btn-lg !border-green-900 !text-green-900 hover:!bg-yellow-500">Agendar demonstração</a>
+  </CtaBand>
+</Base>

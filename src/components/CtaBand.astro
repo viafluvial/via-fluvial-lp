@@ -1,0 +1,22 @@
+---
+/** Faixa de destaque com chamada e botões (usada para "Agendar demonstração" e "Fale conosco"). */
+interface Props {
+  title: string;
+  text?: string;
+  id?: string;
+  tone?: 'yellow' | 'green';
+}
+const { title, text, id, tone = 'yellow' } = Astro.props;
+---
+
+<section id={id} class:list={['section', tone === 'yellow' ? 'bg-yellow-400 text-green-900' : 'on-green bg-green-800 text-white']}>
+  <div class="wrap flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+    <div class="max-w-2xl">
+      <h2 class="h2">{title}</h2>
+      {text && <p class:list={['mt-3 text-lg', tone === 'yellow' ? 'text-green-900/90' : 'text-green-100']}>{text}</p>}
+    </div>
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <slot />
+    </div>
+  </div>
+</section>

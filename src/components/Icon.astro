@@ -1,0 +1,48 @@
+---
+/**
+ * Ícones Lucide (ISC) embutidos como SVG no HTML estático, sem JavaScript no navegador.
+ * Lê o arquivo do pacote lucide-static na hora do build.
+ */
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+
+interface Props {
+  name: string;
+  size?: number;
+  class?: string;
+  label?: string;
+  strokeWidth?: number;
+}
+
+const { name, size = 24, class: className = '', label, strokeWidth = 2 } = Astro.props;
+
+const require = createRequire(import.meta.url);
+const iconsDir = join(dirname(require.resolve('lucide-static/package.json')), 'icons');
+const cache = ((globalThis as any).__vfIconCache ??= new Map<string, string>()) as Map<string, string>;
+
+let inner = cache.get(name);
+if (inner === undefined) {
+  const raw = readFileSync(join(iconsDir, `${name}.svg`), 'utf8');
+  inner = raw.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').trim();
+  cache.set(name, inner);
+}
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class={className}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+  set:html={inner}
+/>

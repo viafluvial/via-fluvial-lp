@@ -1,0 +1,36 @@
+---
+/** "A Amazônia e os rios em números": cada indicador com valor, ano e fonte visíveis, e link para a publicação. */
+import { getCollection } from 'astro:content';
+
+interface Props {
+  onlyFeatured?: boolean;
+  /** Em fundo escuro, os cartões ficam brancos do mesmo jeito; o parâmetro só ajusta o espaçamento. */
+  columns?: 2 | 3 | 4;
+}
+const { onlyFeatured = false, columns = 4 } = Astro.props;
+
+const all = (await getCollection('numbers')).sort((a, b) => a.data.order - b.data.order);
+const items = onlyFeatured ? all.filter((item) => item.data.featured) : all;
+const grid = columns === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : columns === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2';
+---
+
+<ul class:list={['grid gap-4', grid]} data-testid="numbers-grid">
+  {
+    items.map((item) => (
+      <li class="flex flex-col rounded-2xl border border-line bg-white p-5 text-ink shadow-sm">
+        <p class="text-[0.8125rem] font-bold uppercase tracking-wide text-green-700">{item.data.label}</p>
+        <p class="mt-2 text-[2rem] font-extrabold leading-none tracking-tight text-green-900">
+          {item.data.value}
+        </p>
+        <p class="mt-1 text-sm font-bold text-green-800">{item.data.unit}</p>
+        <p class="mt-3 flex-1 text-[0.9375rem] leading-snug text-muted">{item.data.description}</p>
+        <p class="mt-4 border-t border-line pt-3 text-[0.8125rem] leading-snug text-muted">
+          Fonte:{' '}
+          <a href={item.data.sourceUrl} target="_blank" rel="noopener" class="font-semibold text-green-700 underline underline-offset-2">
+            {item.data.sourceName}
+          </a><span class="sr-only"> (abre em nova aba)</span>, {item.data.year}.
+        </p>
+      </li>
+    ))
+  }
+</ul>

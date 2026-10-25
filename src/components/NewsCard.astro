@@ -1,0 +1,42 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { NEWS_TYPES, formatDate } from '../lib/format';
+
+interface Props {
+  entry: CollectionEntry<'news'>;
+  eager?: boolean;
+}
+const { entry, eager = false } = Astro.props;
+const { data } = entry;
+---
+
+<article class="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-sm transition-shadow hover:shadow-md" data-news-card data-type={data.type}>
+  <a href={`/novidades/${entry.id}`} tabindex="-1" aria-hidden="true" class="block aspect-[16/9] overflow-hidden bg-green-100">
+    <Picture
+      src={data.image}
+      formats={['avif', 'webp']}
+    fallbackFormat="webp"
+      widths={[360, 560, 800]}
+      sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 92vw"
+      alt=""
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+      pictureAttributes={{ class: 'block h-full w-full' }}
+    />
+  </a>
+  <div class="flex flex-1 flex-col p-5">
+    <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+      <span class="rounded-full bg-green-100 px-2.5 py-0.5 font-bold text-green-800">{NEWS_TYPES[data.type]}</span>
+      <time datetime={data.pubDate.toISOString()} class="text-muted">{formatDate(data.pubDate)}</time>
+    </p>
+    <h3 class="mt-3 text-[1.1875rem] font-extrabold leading-snug text-green-900">
+      <a href={`/novidades/${entry.id}`} class="hover:underline">{data.title}</a>
+    </h3>
+    <p class="mt-2 flex-1 leading-relaxed text-muted">{data.summary}</p>
+    <p class="mt-4">
+      <a href={`/novidades/${entry.id}`} class="inline-flex min-h-11 items-center font-bold text-green-700 hover:underline" aria-label={`Ler a notícia: ${data.title}`}>Ler a notícia →</a>
+    </p>
+  </div>
+</article>

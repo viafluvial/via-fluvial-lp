@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Photo from '../components/Photo.astro';
+import { LINKS } from '../data/site';
+
+const agencies = [
+  { icon: 'ticket', title: 'Venda de passagens', text: 'Venda passagens das embarcações parceiras direto pelo painel da agência.' },
+  { icon: 'receipt-text', title: 'Histórico e clientes', text: 'Acompanhe as vendas feitas, os clientes atendidos e a situação de cada reserva.' },
+  { icon: 'users', title: 'Equipe de vendedores', text: 'Cadastre vendedores da agência, cada um com as suas permissões.' },
+  { icon: 'hand-coins', title: 'Comissões e relatórios', text: 'Veja o extrato e a estimativa de comissão, e acompanhe os relatórios do painel.' },
+];
+
+const companies = [
+  { icon: 'ship', title: 'Fretamento', text: 'Precisa de uma embarcação inteira para o seu grupo ou a sua carga? Peça um fretamento pelo app de cargas.' },
+  { icon: 'boxes', title: 'Volume', text: 'Cote vários itens na mesma remessa, informando quantidade, peso e medidas de cada um, e acompanhe tudo pelo app.' },
+  {
+    icon: 'plug-zap',
+    title: 'Integração com sistemas',
+    text: 'Conecte o seu sistema à plataforma por API: chaves de acesso por ambiente (testes e produção), homologação antes de ir ao ar e avisos automáticos (webhooks) com histórico de entregas. Recurso em fase beta.',
+  },
+];
+---
+
+<Base
+  title="Parceiros: agências, empresas, investidores e poder público"
+  description="Agências vendem passagens das embarcações parceiras, empresas contratam fretamento e integram sistemas, e investidores e poder público conhecem a Via Fluvial de perto."
+  path="/parceiros"
+>
+  <PageHero
+    eyebrow="Parceiros"
+    title="Cresça com a Via Fluvial"
+    lead="Agências, empresas, investidores e poder público: conheça como cada parceiro participa da plataforma que conecta pessoas, cargas e embarcações pelos rios da Amazônia."
+    photo="porto-manaus-panorama"
+    photoPosition="50% 70%"
+  >
+    <a href="/demonstracao" data-demo-open class="btn btn-yellow btn-lg">Agendar demonstração</a>
+    <a href="/contato?assunto=PARCERIA" class="btn btn-outline-light btn-lg">Fale conosco</a>
+  </PageHero>
+
+  <section id="agencias" class="section scroll-mt-20" aria-labelledby="agencias-titulo">
+    <div class="wrap">
+      <SectionHead eyebrow="Agências" id="agencias-titulo" title="Painel para vender passagens das embarcações parceiras" lead="Agências de viagem e de turismo vendem as passagens das embarcações parceiras com um painel próprio, sem planilha e sem mensagem solta." />
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          agencies.map((item) => (
+            <li class="card reveal flex flex-col gap-3">
+              <span class="icon-badge"><Icon name={item.icon} size={24} /></span>
+              <h3 class="font-extrabold text-green-900">{item.title}</h3>
+              <p class="leading-relaxed text-muted">{item.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-8"><a href="/demonstracao" data-demo-open class="btn btn-green">Agendar demonstração para agências</a></p>
+    </div>
+  </section>
+
+  <section id="empresas" class="section scroll-mt-20 bg-surface" aria-labelledby="empresas-titulo">
+    <div class="wrap">
+      <SectionHead eyebrow="Empresas" id="empresas-titulo" title="Fretamento, volume e integração com sistemas" lead="Para empresas que enviam cargas com frequência ou precisam de uma embarcação inteira." />
+      <ul class="mt-10 grid gap-4 md:grid-cols-3">
+        {
+          companies.map((item) => (
+            <li class="card reveal flex flex-col gap-3">
+              <span class="icon-badge"><Icon name={item.icon} size={24} /></span>
+              <h3 class="font-extrabold text-green-900">{item.title}</h3>
+              <p class="leading-relaxed text-muted">{item.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <a href={LINKS.cargas('parceiros-empresas')} class="btn btn-outline">Conhecer o app de cargas</a>
+        <a href="/demonstracao" data-demo-open class="btn btn-green">Agendar demonstração para empresas</a>
+      </p>
+    </div>
+  </section>
+
+  <section id="investidores" class="section scroll-mt-20" aria-labelledby="investidores-titulo">
+    <div class="wrap grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
+      <div>
+        <SectionHead eyebrow="Investidores e poder público" id="investidores-titulo" title="Oportunidade com impacto na região" />
+        <dl class="mt-6 space-y-5">
+          <div>
+            <dt class="font-extrabold text-green-900">Oportunidade</dt>
+            <dd class="mt-1 leading-relaxed text-muted">
+              A Região Hidrográfica Amazônica concentra 82,52% das vias economicamente navegadas do Brasil (ANTAQ, 2024), e a compra de passagens e o envio de cargas ainda dependem do balcão do porto. A Via Fluvial leva esse balcão para o celular, para passageiros, barqueiros e transportadores.
+              <a href="/quem-somos#numeros" class="font-semibold text-green-700 underline underline-offset-2">Veja os números e as fontes</a>.
+            </dd>
+          </div>
+          <div>
+            <dt class="font-extrabold text-green-900">Impacto na região</dt>
+            <dd class="mt-1 leading-relaxed text-muted">
+              Renda para barqueiros e transportadores, desenvolvimento local, inclusão de comunidades ribeirinhas e cuidado com os rios: esses são os compromissos que orientam a plataforma.
+            </dd>
+          </div>
+          <div>
+            <dt class="font-extrabold text-green-900">Tração</dt>
+            <dd class="mt-1 leading-relaxed text-muted">
+              Só dados reais. Os números da operação são apresentados em conversa, com a metodologia, e aparecem no site quando passam dos mínimos definidos para publicação.
+            </dd>
+          </div>
+        </dl>
+      </div>
+      <div class="card flex flex-col gap-4 bg-green-50">
+        <h3 class="h3 text-green-900">Vamos conversar?</h3>
+        <p class="leading-relaxed text-muted">
+          Material detalhado é apresentado em conversa. Escolha o assunto e fale com a nossa equipe.
+        </p>
+        <a href="/contato?assunto=INVESTIDORES" class="btn btn-green">Sou investidor</a>
+        <a href="/contato?assunto=PODER_PUBLICO" class="btn btn-outline">Represento o poder público</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap pb-12">
+    <Photo id="casa-flutuante-ubim" class="aspect-[16/7] rounded-3xl shadow-lg" sizes="(min-width: 1152px) 1088px, 92vw" credit="caption" />
+  </div>
+
+  <CtaBand title="Quer ser parceiro da Via Fluvial?" text="Conte um pouco sobre o seu negócio e a gente responde em até 1 dia útil.">
+    <a href="/demonstracao" data-demo-open class="btn btn-green btn-lg">Agendar demonstração</a>
+    <a href="/contato" class="btn btn-outline btn-lg !border-green-900 !text-green-900 hover:!bg-yellow-500">Fale conosco</a>
+  </CtaBand>
+</Base>

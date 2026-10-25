@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+---
+
+<Base
+  title="Inscrição cancelada"
+  description="Sua inscrição na newsletter da Via Fluvial foi cancelada."
+  path="/newsletter/cancelada"
+  noindex
+>
+  <section class="section">
+    <div class="wrap max-w-2xl text-center">
+      <span class="icon-badge !h-16 !w-16"><Icon name="mail-check" size={34} /></span>
+      <h1 class="h1 mt-5 !text-[clamp(1.75rem,4vw,2.5rem)]">Inscrição cancelada</h1>
+      <p class="lead mt-4">
+        Tudo certo: você não receberá mais a newsletter da Via Fluvial. Se mudar de ideia, é só se inscrever de novo quando quiser.
+      </p>
+      <p class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <a href="/#newsletter" class="btn btn-green">Voltar a receber as novidades</a>
+        <a href="/" class="btn btn-outline">Ir para a página inicial</a>
+      </p>
+    </div>
+  </section>
+</Base>

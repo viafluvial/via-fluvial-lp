@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /newsletter/
+
+Sitemap: https://sobre.viafluvial.com.br/sitemap-index.xml

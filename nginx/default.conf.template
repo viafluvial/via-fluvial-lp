@@ -1,0 +1,187 @@
+# sobre.viafluvial.com.br - site estático (Astro) + proxy dos formulários para a plataforma.
+#
+# Este arquivo é um modelo do nginx (/etc/nginx/templates): no início do contêiner o envsubst troca apenas as
+# variáveis VIA_FLUVIAL_* e PLATFORM_STATS_* (ver NGINX_ENVSUBST_FILTER no Dockerfile). As demais ($host, $uri...)
+# são do próprio nginx e ficam como estão.
+
+# ---------- Backends da plataforma (o navegador nunca chama o backend direto) ----------
+map $host $vf_adm_base { default "${VIA_FLUVIAL_API_ADMINISTRACAO_BACKEND_URL}"; }
+map $host $vf_not_base { default "${VIA_FLUVIAL_API_NOTIFICACOES_BACKEND_URL}"; }
+map $host $vf_res_base { default "${VIA_FLUVIAL_API_RESERVAS_BACKEND_URL}"; }
+# Nome do servidor de cada backend (cabeçalho Host e SNI do proxy).
+map $vf_adm_base $vf_adm_host { "~^https?://([^/:]+)" $1; default ""; }
+map $vf_not_base $vf_not_host { "~^https?://([^/:]+)" $1; default ""; }
+map $vf_res_base $vf_res_host { "~^https?://([^/:]+)" $1; default ""; }
+
+# Liga e desliga os números da plataforma (5.9) sem nova publicação: PLATFORM_STATS_ENABLED=true|false.
+map "${PLATFORM_STATS_ENABLED}" $vf_stats_flag {
+  default false;
+  "~*^(true|1|yes|on)$" true;
+}
+
+# ---------- Limite de envios e cache ----------
+limit_req_zone $binary_remote_addr zone=vf_forms:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=vf_stats_rl:1m rate=30r/m;
+proxy_cache_path /var/cache/nginx/vf_stats levels=1 keys_zone=vf_stats:1m max_size=1m inactive=1h use_temp_path=off;
+
+server {
+  listen 80;
+  server_name _;
+  root /usr/share/nginx/html;
+  index index.html;
+  # Redirecionamentos relativos (atrás do Traefik o esquema e a porta externos são outros).
+  absolute_redirect off;
+  server_tokens off;
+
+  # Atrás do Traefik: o IP real da pessoa vem em X-Forwarded-For.
+  set_real_ip_from 10.0.0.0/8;
+  set_real_ip_from 172.16.0.0/12;
+  set_real_ip_from 192.168.0.0/16;
+  real_ip_header X-Forwarded-For;
+  real_ip_recursive on;
+
+  # DNS para os backends (o endereço fica numa variável, então o nginx sobe mesmo sem enxergar a rede).
+  resolver 127.0.0.11 1.1.1.1 8.8.8.8 valid=300s ipv6=off;
+  resolver_timeout 5s;
+
+  gzip on;
+  gzip_comp_level 6;
+  gzip_min_length 1024;
+  gzip_vary on;
+  gzip_types text/plain text/css text/xml application/javascript application/json application/xml application/manifest+json image/svg+xml;
+
+  error_page 404 /404.html;
+
+  # Verificação de saúde do Swarm/Traefik e do HEALTHCHECK da imagem.
+  location = /healthz {
+    access_log off;
+    default_type text/plain;
+    return 200 "ok\n";
+  }
+
+  # Versão publicada (gravada no build: APP_BUILD_ID e APP_VERSION).
+  location = /version.json {
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "no-store" always;
+    default_type application/json;
+    try_files $uri =404;
+  }
+
+  # Configuração de execução do site (lida pelo navegador).
+  location = /runtime-config.json {
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "no-store" always;
+    default_type application/json;
+    return 200 '{"platformStatsEnabled":$vf_stats_flag}\n';
+  }
+
+  # Arquivos com hash no nome: cache de um ano.
+  location /_astro/ {
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "public, max-age=31536000, immutable" always;
+    try_files $uri =404;
+  }
+
+  location = /site.webmanifest {
+    include /etc/nginx/snippets/security-headers.conf;
+    types { application/manifest+json webmanifest; }
+    default_type application/manifest+json;
+    add_header Cache-Control "public, max-age=3600" always;
+    try_files $uri =404;
+  }
+
+  location ~* \.(?:png|jpg|jpeg|webp|avif|svg|ico|txt|xml)$ {
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "public, max-age=86400" always;
+    try_files $uri =404;
+  }
+
+  # ---------- Proxy dos formulários (somente estes caminhos, somente estes métodos) ----------
+  # Pedido de demonstração e contato institucional.
+  location = /api/administracao/public/contact-requests {
+    if ($request_method != POST) { return 405; }
+    limit_req zone=vf_forms burst=5 nodelay;
+    limit_req_status 429;
+    client_max_body_size 16k;
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "no-store" always;
+    proxy_pass $vf_adm_base/public/contact-requests;
+    proxy_http_version 1.1;
+    proxy_ssl_server_name on;
+    proxy_set_header Host $vf_adm_host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header Cookie "";
+    proxy_set_header Authorization "";
+    proxy_hide_header Set-Cookie;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 20s;
+  }
+
+  # Inscrição na newsletter (a confirmação e o cancelamento são links do backend que redirecionam para /newsletter/*).
+  location = /api/notificacoes/public/newsletter/subscriptions {
+    if ($request_method != POST) { return 405; }
+    limit_req zone=vf_forms burst=5 nodelay;
+    limit_req_status 429;
+    client_max_body_size 16k;
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "no-store" always;
+    proxy_pass $vf_not_base/public/newsletter/subscriptions;
+    proxy_http_version 1.1;
+    proxy_ssl_server_name on;
+    proxy_set_header Host $vf_not_host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header Cookie "";
+    proxy_set_header Authorization "";
+    proxy_hide_header Set-Cookie;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 20s;
+  }
+
+  # Números públicos da plataforma (somente leitura, com cache de 10 minutos).
+  location = /api/reservas/public/stats/summary {
+    if ($request_method !~ ^(GET|HEAD)$) { return 405; }
+    limit_req zone=vf_stats_rl burst=10 nodelay;
+    limit_req_status 429;
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "public, max-age=600" always;
+    proxy_pass $vf_res_base/public/stats/summary;
+    proxy_http_version 1.1;
+    proxy_ssl_server_name on;
+    proxy_set_header Host $vf_res_host;
+    proxy_set_header Accept "application/json";
+    proxy_set_header Cookie "";
+    proxy_set_header Authorization "";
+    proxy_hide_header Set-Cookie;
+    proxy_hide_header Cache-Control;
+    proxy_cache vf_stats;
+    proxy_cache_key "stats-summary";
+    proxy_cache_valid 200 10m;
+    proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 10s;
+  }
+
+  # Qualquer outro caminho em /api/ não existe neste site.
+  location /api/ {
+    include /etc/nginx/snippets/security-headers.conf;
+    return 404;
+  }
+
+  # Página 404 (as rotas antigas /admin e /test-database também caem aqui, sem dados).
+  location = /404.html {
+    internal;
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "no-store" always;
+  }
+
+  # Páginas: /barqueiros -> barqueiros.html, /novidades -> novidades.html.
+  location / {
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "public, max-age=300" always;
+    try_files $uri $uri.html $uri/ =404;
+  }
+}

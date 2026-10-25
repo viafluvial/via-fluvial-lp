@@ -1,0 +1,63 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import DemoForm from '../components/islands/DemoForm';
+import { SITE } from '../data/site';
+
+const steps = [
+  { icon: 'send', title: 'Você envia o pedido', text: 'Conte quem você é e o que opera. Leva um minuto.' },
+  { icon: 'mail-check', title: 'Respondemos em até 1 dia útil', text: 'Nossa equipe escreve para o e-mail informado e combina o melhor horário.' },
+  { icon: 'presentation', title: 'Você vê a plataforma funcionando', text: 'Mostramos a área do seu caso e respondemos às suas dúvidas.' },
+];
+---
+
+<Base
+  title="Agendar uma demonstração"
+  description="Quer ver a Via Fluvial funcionando na sua operação? Agende uma demonstração para barqueiros, transportadores, agências e empresas."
+  path="/demonstracao"
+>
+  <section class="section">
+    <div class="wrap grid items-start gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-14">
+      <div>
+        <p class="eyebrow">Demonstração</p>
+        <h1 class="h1 mt-2 !text-[clamp(1.9rem,4.5vw,3rem)]">Quer ver a plataforma funcionando na sua operação?</h1>
+        <p class="lead mt-5">
+          Agende uma conversa com a nossa equipe. Mostramos a Área do Barqueiro, o painel de cargas ou o painel da agência, conforme o seu caso, e tiramos as dúvidas sobre cadastro, aprovação e operação.
+        </p>
+        <ol class="mt-8 space-y-5">
+          {
+            steps.map((step, index) => (
+              <li class="flex gap-4">
+                <span class="icon-badge relative">
+                  <Icon name={step.icon} size={24} />
+                  <span class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-400 text-xs font-extrabold text-green-900" aria-hidden="true">{index + 1}</span>
+                </span>
+                <div>
+                  <p class="font-extrabold text-green-900"><span class="sr-only">Passo {index + 1}: </span>{step.title}</p>
+                  <p class="mt-0.5 text-muted">{step.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="mt-8 text-muted">
+          Prefere falar agora? Chame no WhatsApp{' '}
+          <a href={SITE.whatsappUrl} target="_blank" rel="noopener" class="font-bold text-green-700 underline underline-offset-2">{SITE.whatsappDisplay}</a>{' '}
+          ou escreva para <a href={`mailto:${SITE.email}`} class="font-bold text-green-700 underline underline-offset-2">{SITE.email}</a>.
+        </p>
+      </div>
+
+      <div class="card !p-5 sm:!p-8">
+        <h2 class="text-2xl font-extrabold text-green-900">Agendar demonstração</h2>
+        <div class="mt-5">
+          <DemoForm client:load />
+          <noscript>
+            <p class="rounded-xl border-2 border-green-700 bg-green-50 p-4 text-sm text-green-900">
+              Para enviar o formulário, ative o JavaScript do navegador ou escreva para {SITE.email}.
+            </p>
+          </noscript>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

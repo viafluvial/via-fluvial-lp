@@ -1,0 +1,45 @@
+---
+/** Faixa de abertura das páginas internas: verde, com título, texto de apoio, botões e foto opcional. */
+import { getEntry } from 'astro:content';
+import Photo from './Photo.astro';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  photo?: string;
+  photoPosition?: string;
+}
+const { eyebrow, title, lead, photo, photoPosition = 'center' } = Astro.props;
+const credit = photo ? await getEntry('credits', photo) : undefined;
+---
+
+<section class="on-green relative isolate overflow-hidden bg-green-800 text-white">
+  {
+    photo && (
+      <>
+        <Photo id={photo} eager class="absolute inset-0 -z-20" sizes="100vw" widths={[480, 768, 1152, 1600]} position={photoPosition} />
+        <div class="absolute inset-0 -z-10 bg-gradient-to-r from-green-900/95 via-green-900/80 to-green-900/45" aria-hidden="true" />
+      </>
+    )
+  }
+  <div class="wrap py-14 md:py-20">
+    <div class="max-w-3xl">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1 class="h1 mt-2">{title}</h1>
+      {lead && <p class="lead mt-5 max-w-2xl">{lead}</p>}
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <slot />
+      </div>
+    </div>
+  </div>
+  {
+    credit && photo && (
+      <p class="wrap pb-3 text-right text-[0.7rem] text-white/80">
+        <a href={`/creditos#${photo}`} class="underline-offset-2 hover:underline">
+          Foto: {credit.data.author} ({credit.data.license})
+        </a>
+      </p>
+    )
+  }
+</section>

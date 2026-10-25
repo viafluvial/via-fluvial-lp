@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { LINKS } from '../../data/site';
+---
+
+<Base
+  title="Inscrição confirmada"
+  description="Sua inscrição na newsletter da Via Fluvial está confirmada."
+  path="/newsletter/confirmada"
+  noindex
+>
+  <section class="section">
+    <div class="wrap max-w-2xl text-center">
+      <span class="icon-badge !h-16 !w-16"><Icon name="circle-check" size={34} /></span>
+      <h1 class="h1 mt-5 !text-[clamp(1.75rem,4vw,2.5rem)]">Inscrição confirmada!</h1>
+      <p class="lead mt-4">
+        Pronto: a partir de agora você recebe as novidades da Via Fluvial por e-mail. Em todas as mensagens há um link para cancelar a inscrição com um clique.
+      </p>
+      <p class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <a href="/novidades" class="btn btn-green">Ver as novidades</a>
+        <a href={LINKS.app('newsletter-confirmada')} class="btn btn-outline">Abrir o app</a>
+      </p>
+    </div>
+  </section>
+</Base>

@@ -3,6 +3,13 @@ version: "3.9"
 services:
   sobre-lp:
     image: "${APP_IMAGE}"
+    environment:
+      # O nginx do site encaminha os formulários para estes backends (o navegador nunca os chama direto).
+      VIA_FLUVIAL_API_ADMINISTRACAO_BACKEND_URL: "${VIA_FLUVIAL_API_ADMINISTRACAO_BACKEND_URL:-https://api-administracao.api.plataforma.prd.viafluvial.com.br/api/v1}"
+      VIA_FLUVIAL_API_NOTIFICACOES_BACKEND_URL: "${VIA_FLUVIAL_API_NOTIFICACOES_BACKEND_URL:-https://api-notificacoes.api.plataforma.prd.viafluvial.com.br/api/v1}"
+      VIA_FLUVIAL_API_RESERVAS_BACKEND_URL: "${VIA_FLUVIAL_API_RESERVAS_BACKEND_URL:-https://api-reservas.api.plataforma.prd.viafluvial.com.br/api/v1}"
+      # Faixa "números da plataforma" (5.9): ligue (true) só depois do lançamento oficial.
+      PLATFORM_STATS_ENABLED: "${PLATFORM_STATS_ENABLED:-false}"
     networks:
       - service-public
     deploy:

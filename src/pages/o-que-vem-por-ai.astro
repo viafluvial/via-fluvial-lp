@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import NewsletterBand from '../components/NewsletterBand.astro';
+
+const items = (await getCollection('roadmap')).sort((a, b) => a.data.order - b.data.order);
+
+const columns = [
+  { id: 'agora', title: 'Agora', text: 'Em andamento neste momento.', icon: 'rocket' },
+  { id: 'em-seguida', title: 'Em seguida', text: 'O que vem logo depois.', icon: 'calendar-days' },
+  { id: 'mais-adiante', title: 'Mais adiante', text: 'Ideias para o futuro.', icon: 'navigation' },
+] as const;
+
+const audienceLabel = {
+  passageiros: 'Passageiros',
+  barqueiros: 'Barqueiros',
+  cargas: 'Cargas e encomendas',
+  empresas: 'Empresas',
+  todos: 'Todos',
+} as const;
+---
+
+<Base
+  title="O que vem por aí"
+  description="O roteiro público da Via Fluvial: o que está em andamento, o que vem em seguida e o que queremos fazer mais adiante. Sem datas, e os planos podem mudar."
+  path="/o-que-vem-por-ai"
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Roteiro</p>
+      <h1 class="h1 mt-2 !text-[clamp(1.9rem,4.5vw,3rem)]">O que vem por aí</h1>
+      <p class="lead mt-4 max-w-2xl">O que estamos construindo, em linguagem simples e sem datas.</p>
+      <p class="mt-5 flex max-w-2xl items-start gap-3 rounded-xl border border-yellow-500 bg-yellow-50 p-4 text-[0.95rem] text-green-900" role="note">
+        <Icon name="circle-alert" size={22} class="mt-0.5 flex-none text-green-800" />
+        <span><strong>Planos podem mudar.</strong> Este roteiro mostra a direção, não uma promessa de prazo. Quando algo é lançado, sai daqui e vira notícia.</span>
+      </p>
+
+      <div class="mt-10 grid gap-6 lg:grid-cols-3">
+        {
+          columns.map((column) => (
+            <section class="rounded-3xl border border-line bg-surface p-5" aria-labelledby={`col-${column.id}`}>
+              <div class="flex items-center gap-3">
+                <span class="icon-badge"><Icon name={column.icon} size={24} /></span>
+                <div>
+                  <h2 id={`col-${column.id}`} class="text-xl font-extrabold text-green-900">{column.title}</h2>
+                  <p class="text-sm text-muted">{column.text}</p>
+                </div>
+              </div>
+              <ul class="mt-5 space-y-3" data-column={column.id}>
+                {items
+                  .filter((item) => item.data.column === column.id)
+                  .map((item) => (
+                    <li class="rounded-2xl border border-line bg-white p-4 shadow-sm">
+                      <p class="text-xs font-bold uppercase tracking-wide text-green-700">{audienceLabel[item.data.audience]}</p>
+                      <h3 class="mt-1 font-extrabold text-green-900">{item.data.title}</h3>
+                      <p class="mt-1 leading-relaxed text-muted">{item.data.description}</p>
+                    </li>
+                  ))}
+              </ul>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <NewsletterBand title="Acompanhe cada novidade" text="Assine a newsletter e receba um aviso quando um destes itens for lançado." />
+</Base>
