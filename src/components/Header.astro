@@ -52,7 +52,7 @@ const linkBase =
 
     <div class="flex items-center gap-2">
       <a href={LINKS.platform} class="btn btn-yellow hidden whitespace-nowrap !px-4 !text-[0.95rem] sm:inline-flex">Acessar a plataforma</a>
-      <a href="/demonstracao" data-demo-open class="btn btn-outline-light hidden whitespace-nowrap !px-4 !text-[0.95rem] nav:inline-flex">Agendar demonstração</a>
+      <a href="/demonstracao" data-demo-open class="btn btn-outline-light hidden whitespace-nowrap !px-4 !text-[0.95rem] nav:inline-flex" aria-label="Agendar demonstração"><span class="max-[1439px]:hidden">Agendar demonstração</span><span class="min-[1440px]:hidden">Demonstração</span></a>
       <MobileMenu
         client:load
         main={NAV_MAIN}
