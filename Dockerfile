@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
-RUN npm run build \
+RUN PUBLIC_APP_BUILD_ID="${APP_BUILD_ID}" npm run build \
  && printf '{"buildId":"%s","version":"%s"}\n' "${APP_BUILD_ID}" "${APP_VERSION}" > dist/version.json
 
 FROM nginx:1.27-alpine AS runtime
@@ -19,7 +19,13 @@ LABEL org.opencontainers.image.source="https://github.com/viafluvial/via-fluvial
       org.opencontainers.image.revision="${APP_BUILD_ID}"
 
 # O nginx troca só estas variáveis nos modelos de /etc/nginx/templates (as do próprio nginx ficam intactas).
-ENV NGINX_ENVSUBST_FILTER="^(VIA_FLUVIAL_|PLATFORM_STATS_)" \
+# COROOT_API_KEY chega por variável de ambiente do contêiner (stack Portainer) e NUNCA é gravada na imagem
+# (o valor vazio abaixo só garante que o envsubst sempre a encontre; vazio = telemetria descartada).
+ENV NGINX_ENVSUBST_FILTER="^(COROOT_|VIA_FLUVIAL_|PLATFORM_STATS_)" \
+    COROOT_API_KEY="" \
+    VIA_FLUVIAL_OTEL_ENABLED="true" \
+    VIA_FLUVIAL_OTEL_SAMPLE_RATIO="1.0" \
+    VIA_FLUVIAL_ENVIRONMENT="prd" \
     VIA_FLUVIAL_API_ADMINISTRACAO_BACKEND_URL="https://api-administracao.api.plataforma.prd.viafluvial.com.br/api/v1" \
     VIA_FLUVIAL_API_NOTIFICACOES_BACKEND_URL="https://api-notificacoes.api.plataforma.prd.viafluvial.com.br/api/v1" \
     VIA_FLUVIAL_API_RESERVAS_BACKEND_URL="https://api-reservas.api.plataforma.prd.viafluvial.com.br/api/v1" \

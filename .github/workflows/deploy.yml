@@ -92,6 +92,8 @@ jobs:
       - name: Deploy stack via Portainer API
         env:
           PORTAINER_API_KEY: ${{ secrets.PORTAINER_APPLICATION_API_KEY }}
+          # Chave OTLP do Coroot: lida do ambiente pelo script (merge_runtime_env) e renderizada na stack; nunca em arquivo versionado.
+          COROOT_API_KEY: ${{ secrets.COROOT_API_KEY }}
         run: |
           set -euo pipefail
           test -n "${PORTAINER_API_KEY:-}" || (echo "PORTAINER_APPLICATION_API_KEY secret is required" && exit 1)

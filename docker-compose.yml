@@ -20,4 +20,6 @@ services:
       VIA_FLUVIAL_API_NOTIFICACOES_BACKEND_URL: ${VIA_FLUVIAL_API_NOTIFICACOES_BACKEND_URL:-https://api-notificacoes.api.plataforma.prd.viafluvial.com.br/api/v1}
       VIA_FLUVIAL_API_RESERVAS_BACKEND_URL: ${VIA_FLUVIAL_API_RESERVAS_BACKEND_URL:-https://api-reservas.api.plataforma.prd.viafluvial.com.br/api/v1}
       PLATFORM_STATS_ENABLED: ${PLATFORM_STATS_ENABLED:-false}
+      # Telemetria local desligada por padrão (sem chave do Coroot o nginx descarta os spans).
+      VIA_FLUVIAL_OTEL_ENABLED: ${VIA_FLUVIAL_OTEL_ENABLED:-false}
     restart: unless-stopped

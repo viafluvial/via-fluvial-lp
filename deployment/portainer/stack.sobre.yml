@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  sobre-lp:
+  via-fluvial-app-sobre:
     image: "${APP_IMAGE}"
     environment:
       # O nginx do site encaminha os formulários para estes backends (o navegador nunca os chama direto).
@@ -10,6 +10,12 @@ services:
       VIA_FLUVIAL_API_RESERVAS_BACKEND_URL: "${VIA_FLUVIAL_API_RESERVAS_BACKEND_URL:-https://api-reservas.api.plataforma.prd.viafluvial.com.br/api/v1}"
       # Faixa "números da plataforma" (5.9): ligue (true) só depois do lançamento oficial.
       PLATFORM_STATS_ENABLED: "${PLATFORM_STATS_ENABLED:-false}"
+      # Chave OTLP do Coroot: vem do GitHub Actions secret COROOT_API_KEY (ambiente do deploy), nunca versionada.
+      # Vazia = o nginx aceita e descarta a telemetria. As demais variáveis só expõem flags ao navegador (/config.js).
+      COROOT_API_KEY: "${COROOT_API_KEY:-}"
+      VIA_FLUVIAL_OTEL_ENABLED: "${VIA_FLUVIAL_OTEL_ENABLED:-true}"
+      VIA_FLUVIAL_OTEL_SAMPLE_RATIO: "${VIA_FLUVIAL_OTEL_SAMPLE_RATIO:-1.0}"
+      VIA_FLUVIAL_ENVIRONMENT: "${VIA_FLUVIAL_ENVIRONMENT:-prd}"
     networks:
       - service-public
     deploy:

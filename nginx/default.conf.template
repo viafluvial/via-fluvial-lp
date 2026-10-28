@@ -1,7 +1,7 @@
 # sobre.viafluvial.com.br - site estático (Astro) + proxy dos formulários para a plataforma.
 #
 # Este arquivo é um modelo do nginx (/etc/nginx/templates): no início do contêiner o envsubst troca apenas as
-# variáveis VIA_FLUVIAL_* e PLATFORM_STATS_* (ver NGINX_ENVSUBST_FILTER no Dockerfile). As demais ($host, $uri...)
+# variáveis COROOT_*, VIA_FLUVIAL_* e PLATFORM_STATS_* (ver NGINX_ENVSUBST_FILTER no Dockerfile). As demais ($host, $uri...)
 # são do próprio nginx e ficam como estão.
 
 # ---------- Backends da plataforma (o navegador nunca chama o backend direto) ----------
@@ -19,7 +19,14 @@ map "${PLATFORM_STATS_ENABLED}" $vf_stats_flag {
   "~*^(true|1|yes|on)$" true;
 }
 
+# Telemetria do navegador sem chave configurada: aceita e descarta os spans (204). O valor é trocado na partida.
+map "${COROOT_API_KEY}" $vf_otel_disabled {
+  default 0;
+  "" 1;
+}
+
 # ---------- Limite de envios e cache ----------
+limit_req_zone $binary_remote_addr zone=otel:10m rate=20r/s;
 limit_req_zone $binary_remote_addr zone=vf_forms:10m rate=10r/m;
 limit_req_zone $binary_remote_addr zone=vf_stats_rl:1m rate=30r/m;
 proxy_cache_path /var/cache/nginx/vf_stats levels=1 keys_zone=vf_stats:1m max_size=1m inactive=1h use_temp_path=off;
@@ -73,6 +80,33 @@ server {
     add_header Cache-Control "no-store" always;
     default_type application/json;
     return 200 '{"platformStatsEnabled":$vf_stats_flag}\n';
+  }
+
+  # Configuração de execução da telemetria (somente flags, razão de amostragem e ambiente; NUNCA a chave).
+  location = /config.js {
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "no-cache" always;
+    default_type application/javascript;
+    return 200 "window.__VIA_FLUVIAL_OTEL__={enabled:'${VIA_FLUVIAL_OTEL_ENABLED}',sampleRatio:'${VIA_FLUVIAL_OTEL_SAMPLE_RATIO}',environment:'${VIA_FLUVIAL_ENVIRONMENT}'};\n";
+  }
+
+  # Telemetria do navegador (OTLP/HTTP): o nginx acrescenta a chave do Coroot; ela nunca vai ao JS nem ao repositório.
+  location = /otel/v1/traces {
+    limit_except POST { deny all; }
+    limit_req zone=otel burst=40 nodelay;
+    client_max_body_size 512k;
+    access_log off;
+    if ($vf_otel_disabled) { return 204; }
+    set $coroot_host coroot.observability.plataforma.prd.viafluvial.com.br;
+    proxy_set_header x-api-key "${COROOT_API_KEY}";
+    proxy_set_header Host $coroot_host;
+    proxy_set_header Cookie "";
+    proxy_set_header Authorization "";
+    proxy_ssl_server_name on;
+    proxy_ssl_name $coroot_host;
+    proxy_connect_timeout 3s;
+    proxy_read_timeout 10s;
+    proxy_pass https://$coroot_host/v1/traces;
   }
 
   # Arquivos com hash no nome: cache de um ano.

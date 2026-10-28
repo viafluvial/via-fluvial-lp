@@ -55,6 +55,7 @@ def merge_runtime_env(defaults: Dict[str, str]) -> Dict[str, str]:
     for key, value in os.environ.items():
         if key in merged or key.startswith("VIA_FLUVIAL_") or key in {
             "APP_IMAGE",
+            "COROOT_API_KEY",
             "DOMAIN_PRIMARY",
             "DOMAIN_WWW",
             "STACK_REPLICAS",
