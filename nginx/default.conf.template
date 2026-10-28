@@ -12,6 +12,20 @@ map $host $vf_res_base { default "${VIA_FLUVIAL_API_RESERVAS_BACKEND_URL}"; }
 map $vf_adm_base $vf_adm_host { "~^https?://([^/:]+)" $1; default ""; }
 map $vf_not_base $vf_not_host { "~^https?://([^/:]+)" $1; default ""; }
 map $vf_res_base $vf_res_host { "~^https?://([^/:]+)" $1; default ""; }
+# Com VIA_FLUVIAL_API_INTERNAL_INGRESS_IP, as APIs de producao sao chamadas direto no Traefik do cluster api
+# pelo IP interno da VPC (Host/SNI continuam com o dominio). Vazio = URL original pelo DNS publico.
+map "${VIA_FLUVIAL_API_INTERNAL_INGRESS_IP}|$vf_adm_base" $vf_adm_connect {
+  "~^(?<ingress_ip>[0-9.]+)\|https://api-[a-z0-9-]+\.api\.plataforma\.prd\.viafluvial\.com\.br(?<base_path>/.*)?$" https://$ingress_ip$base_path;
+  "~^[^|]*\|(?<original_base>.*)$" $original_base;
+}
+map "${VIA_FLUVIAL_API_INTERNAL_INGRESS_IP}|$vf_not_base" $vf_not_connect {
+  "~^(?<ingress_ip>[0-9.]+)\|https://api-[a-z0-9-]+\.api\.plataforma\.prd\.viafluvial\.com\.br(?<base_path>/.*)?$" https://$ingress_ip$base_path;
+  "~^[^|]*\|(?<original_base>.*)$" $original_base;
+}
+map "${VIA_FLUVIAL_API_INTERNAL_INGRESS_IP}|$vf_res_base" $vf_res_connect {
+  "~^(?<ingress_ip>[0-9.]+)\|https://api-[a-z0-9-]+\.api\.plataforma\.prd\.viafluvial\.com\.br(?<base_path>/.*)?$" https://$ingress_ip$base_path;
+  "~^[^|]*\|(?<original_base>.*)$" $original_base;
+}
 
 # Liga e desliga os números da plataforma (5.9) sem nova publicação: PLATFORM_STATS_ENABLED=true|false.
 map "${PLATFORM_STATS_ENABLED}" $vf_stats_flag {
@@ -30,6 +44,13 @@ limit_req_zone $binary_remote_addr zone=otel:10m rate=20r/s;
 limit_req_zone $binary_remote_addr zone=vf_forms:10m rate=10r/m;
 limit_req_zone $binary_remote_addr zone=vf_stats_rl:1m rate=30r/m;
 proxy_cache_path /var/cache/nginx/vf_stats levels=1 keys_zone=vf_stats:1m max_size=1m inactive=1h use_temp_path=off;
+
+# Envio ao Coroot pelo IP interno do Traefik do cluster observability (VIA_FLUVIAL_COROOT_INTERNAL_IP);
+# mesmo Host/SNI e certificado. Vazio = resolve pelo DNS publico.
+map "${VIA_FLUVIAL_COROOT_INTERNAL_IP}" $coroot_connect_host {
+  "" coroot.observability.plataforma.prd.viafluvial.com.br;
+  default "${VIA_FLUVIAL_COROOT_INTERNAL_IP}";
+}
 
 server {
   listen 80;
@@ -106,7 +127,7 @@ server {
     proxy_ssl_name $coroot_host;
     proxy_connect_timeout 3s;
     proxy_read_timeout 10s;
-    proxy_pass https://$coroot_host/v1/traces;
+    proxy_pass https://$coroot_connect_host/v1/traces;
   }
 
   # Arquivos com hash no nome: cache de um ano.
@@ -139,7 +160,8 @@ server {
     client_max_body_size 16k;
     include /etc/nginx/snippets/security-headers.conf;
     add_header Cache-Control "no-store" always;
-    proxy_pass $vf_adm_base/public/contact-requests;
+    proxy_pass $vf_adm_connect/public/contact-requests;
+    proxy_ssl_name $vf_adm_host;
     proxy_http_version 1.1;
     proxy_ssl_server_name on;
     proxy_set_header Host $vf_adm_host;
@@ -161,7 +183,8 @@ server {
     client_max_body_size 16k;
     include /etc/nginx/snippets/security-headers.conf;
     add_header Cache-Control "no-store" always;
-    proxy_pass $vf_not_base/public/newsletter/subscriptions;
+    proxy_pass $vf_not_connect/public/newsletter/subscriptions;
+    proxy_ssl_name $vf_not_host;
     proxy_http_version 1.1;
     proxy_ssl_server_name on;
     proxy_set_header Host $vf_not_host;
@@ -182,7 +205,8 @@ server {
     limit_req_status 429;
     include /etc/nginx/snippets/security-headers.conf;
     add_header Cache-Control "public, max-age=600" always;
-    proxy_pass $vf_res_base/public/stats/summary;
+    proxy_pass $vf_res_connect/public/stats/summary;
+    proxy_ssl_name $vf_res_host;
     proxy_http_version 1.1;
     proxy_ssl_server_name on;
     proxy_set_header Host $vf_res_host;
