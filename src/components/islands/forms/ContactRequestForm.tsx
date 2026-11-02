@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type SyntheticEvent } from 'react';
 import { SITE } from '../../../data/site';
+import { registrarEvento } from '../../../observability/analytics';
 import {
   CONTACT_ENDPOINT,
   ConsentField,
@@ -142,6 +143,9 @@ export default function ContactRequestForm({ kind, initialSubject, onSuccess }: 
     const outcome = await postJson(CONTACT_ENDPOINT, body);
     setSending(false);
     if (outcome.kind === 'success') {
+      // Só categorias (sem nome, e-mail, telefone ou empresa).
+      if (isDemo) registrarEvento('lp_demonstracao_solicitada', { tipo_operacao: values.partnerType });
+      else registrarEvento('lp_contato_enviado', { assunto: values.subject });
       setDone(true);
       onSuccess?.();
     } else {

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type SyntheticEvent } from 'react';
 import { SITE } from '../../data/site';
+import { registrarEvento } from '../../observability/analytics';
 import {
   ConsentField,
   ErrorFallback,
@@ -55,8 +56,12 @@ export default function NewsletterForm() {
       website,
     });
     setSending(false);
-    if (outcome.kind === 'success') setDone(true);
-    else setFailure(outcome.kind);
+    if (outcome.kind === 'success') {
+      registrarEvento('lp_newsletter_inscricao_enviada');
+      setDone(true);
+    } else {
+      setFailure(outcome.kind);
+    }
   }
 
   if (done) {

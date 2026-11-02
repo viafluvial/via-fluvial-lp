@@ -36,6 +36,12 @@ const props = Astro.props;
     </script>
     <!-- Configuração de execução da telemetria (nginx renderiza na partida; no dev vem de public/config.js). -->
     <script is:inline src="/config.js"></script>
+    <!-- Análise de uso (Rybbit, mesmo site das demais apps; propriedades separadas por hostname). -->
+    <script
+      is:inline
+      src="https://rybbit.observability.plataforma.prd.viafluvial.com.br/api/script.js?siteId=99037803aad6"
+      data-replay-sample-rate="50"
+      defer></script>
     <slot name="head" />
   </head>
   <body class="min-h-screen flex flex-col">
